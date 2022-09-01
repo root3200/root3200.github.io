@@ -6,8 +6,8 @@ categories: [Writeup, HTB]
 tags: [Linux, CTF, Easy, SNMP, Port Forwarding, SQLi, PATH Hijacking, CVE, CMS, SUID]
 image:
   path: ../../assets/img/Fuse.png
-  width: 900
-  height: 200
+  width: 400
+  height: 100
   alt: Banner Pandora
 ---
 
