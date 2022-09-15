@@ -134,14 +134,15 @@ Ahora con todos los archivos lo primero que hacemos es mirar los metadatos usand
 ![imagen-de-prueba](/assets/img/intelligence/exiftool1.png)
 _Intelligence_
 
-![imagen-de-prueba](/assets/img/intelligence/exiftool2.png)
-_Intelligence_
 
 Tenemos muchos usuarios, vamos a crear un archivo users.
 
 ````bash
 > exiftool *.pdf | grep 'Creator' | awk 'NF{print $NF}' | sort -u > users
 `````
+
+![imagen-de-prueba](/assets/img/intelligence/exiftool2.png)
+_Intelligence_
 
 Bien ya tenemos los usuario, ahora tenemos que verificar que son existentes usaremos `kerbrute` que nos da la opcion de validar usuarios.
 
@@ -181,14 +182,16 @@ Tenemos el texto de todos los pdf ahora con `cat` podemos mirar el contenido , p
 ![imagen-de-prueba](/assets/img/intelligence/password1.png)
 _Intelligence_
 
-Tenemos una contraseña pero de que usuario, vamos a hacer un `Password Spray` con `crackmapexec` para si en la contraseña le pertenece algun usuraio de nuestra lista `user` .
+Tenemos una contraseña pero de que usuario, vamos a hacer un `Password Spray` con `crackmapexec` para ver la contraseña le pertenece algun usuraio de nuestra lista `user` .
 
 ![imagen-de-prueba](/assets/img/intelligence/passwordspray.png)
 _Intelligence_
 
 La contraseña le pertenece a `Tiffany.Molina` pero cracmapexec me reporta que el usuario no es `pwned` , antes de seguir enumerando voy hacer un `Kerberoasting Attack` para ver si puedo obtener un `hash` .
 
-imagen de `Kerberoasting Attack`
+
+![imagen-de-prueba](/assets/img/intelligence/kerberoasting.png)
+_Intelligence_
 
 
 El usuario no es vulnerable al `Kerberoasting` , lo que puedo hacer ahora que tengo credenciales validas es enumerar si la maquina tiene recursos compartidos con crackmapexec.
