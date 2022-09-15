@@ -1,11 +1,11 @@
 ---
 title: Intelligence Writeup
 author: root3200
-date: 2022-05-31
+date: 2022-09-15
 categories: [Writeup, HTB]
 tags: [Windows, bloodhound, crackmapexec,]
 image:
-  path: ../../assets/img/intelligence/intelligence.png
+  path: ../../assets/img/intelligence/Intelligence.png
   width: 800 #normal 800
   height: 500 #normal 500
   alt: Intelligence
@@ -121,7 +121,8 @@ for i in {2020..2022}; do for j in {01..12}; do for k in {01..31}; do echo "http
 
 Este script nos permite descargar con wget en un rango de 2020 a 2022 , mes 01 a mes 12, dia 01 a dia 31
 
-imagen descarga
+![imagen-de-prueba](/assets/img/intelligence/descarga-pdf.png)
+_Intelligence_
 
 Ahora con todos los archivos lo primero que hacemos es mirar los metadatos usando exiftool que nos muestra mas informacion como fecha de creacion, modificacion, peso , formato, creador etc
 
@@ -130,7 +131,11 @@ Ahora con todos los archivos lo primero que hacemos es mirar los metadatos usand
 >exiftool *.pdf | grep 'Creator' # puedes hacer grep para ver solo el creador 
 ````
 
-imagen exiftool
+![imagen-de-prueba](/assets/img/intelligence/exiftool1.png)
+_Intelligence_
+
+![imagen-de-prueba](/assets/img/intelligence/exiftool2.png)
+_Intelligence_
 
 Tenemos muchos usuarios, vamos a crear un archivo users.
 
@@ -144,7 +149,8 @@ Bien ya tenemos los usuario, ahora tenemos que verificar que son existentes usar
 kerbrute userenum --dc 10.10.10.248 -d intelligence.htb users #users es donde guardamos la lista de usuarios
 `````
 
-imagen de validacionde usuarios 
+![imagen-de-prueba](/assets/img/intelligence/kerbrute.png)
+_Intelligence_
 
 Perfecto tenemos 30 usuarios validos que existen en el DC, ahora lo que podemos hacer es intentar un `ASRepRoast Attack` con `GetNPUsers.py ` para solicitar `TGT` y ver si obtengo un hash NTLMv2.
 
@@ -152,7 +158,8 @@ Perfecto tenemos 30 usuarios validos que existen en el DC, ahora lo que podemos 
  impacket-GetNPUsers.py intellingence.htb/ -no-pass -userfile users
 `````
 
-imagen de ASRepRoast Attack
+![imagen-de-prueba](/assets/img/intelligence/asrep.png)
+_Intelligence_
 
 El resultado es que ningun usuario es vulnerable al ataque, asi que solo tenemos usuarios pero sin contraseñas.
 
@@ -162,8 +169,8 @@ Todos los PDF que descargamos tiene contenido puede que en alguno exista alguna 
 >for file in $(ls); do echo $file; done | while read filename; do pdftotext $filename; done 
 `````
 
-imagen del pdftotext
-
+![imagen-de-prueba](/assets/img/intelligence/pdftotext.png)
+_Intelligence_
 
 Tenemos el texto de todos los pdf ahora con `cat` podemos mirar el contenido , pero si usamos `grep` para filtrar en todos los `.txt`  la palabra `password, users` puede que encontremos algo.
 
@@ -171,12 +178,13 @@ Tenemos el texto de todos los pdf ahora con `cat` podemos mirar el contenido , p
 >cat *.txt | grep 'password' -2
 `````
 
-
-imagen del cat passwords
+![imagen-de-prueba](/assets/img/intelligence/password1.png)
+_Intelligence_
 
 Tenemos una contraseña pero de que usuario, vamos a hacer un `Password Spray` con `crackmapexec` para si en la contraseña le pertenece algun usuraio de nuestra lista `user` .
 
-imagen de password spray 
+![imagen-de-prueba](/assets/img/intelligence/passwordspray.png)
+_Intelligence_
 
 La contraseña le pertenece a `Tiffany.Molina` pero cracmapexec me reporta que el usuario no es `pwned` , antes de seguir enumerando voy hacer un `Kerberoasting Attack` para ver si puedo obtener un `hash` .
 
@@ -189,7 +197,8 @@ El usuario no es vulnerable al `Kerberoasting` , lo que puedo hacer ahora que te
 >cme smb 10.10.10.248 -u 'Tiffany.Molina' -p 'NewIntelligenceCorpUser9876' --shares
 `````
 
-imagen de scan cme
+![imagen-de-prueba](/assets/img/intelligence/cme1.png)
+_Intelligence_
 
 Tenemos acceso a recursos compartidos con el usuario `Tiffany` , vemos que hay una directorio llamada `IT` miramos su contenido pero ahora usamos `smbmap` , dentro del directorio econtramos un archivo .ps1 
 
@@ -199,7 +208,8 @@ Tenemos acceso a recursos compartidos con el usuario `Tiffany` , vemos que hay u
 
 + El modificador R es para listar todo el contenido del recurso IT.
 
-imagen smb map
+![imagen-de-prueba](/assets/img/intelligence/smbmap.png)
+_Intelligence_
 
 Descargamos el archivo .ps1
 
@@ -209,7 +219,8 @@ Descargamos el archivo .ps1
 
 Le hacemos un `cat` al .ps1 para ver su contenido.
 
-imagen del .ps1
+![imagen-de-prueba](/assets/img/intelligence/ps1.png)
+_Intelligence_
 
 Es un script en powershell que ejecuta un tarea cada 5 minutos.
 
@@ -248,7 +259,8 @@ Ahora con `responder` nos ponemos en escucha en la interfaz `Tun0`
 >reponder I tun0
 `````
 
-imagen responder  
+![imagen-de-prueba](/assets/img/intelligence/responder1.png)
+_Intelligence_
 
 El script dice que se ejecuta cada 5 minutos asi que esperemos y veamos si alguien se autentica al DNS que creamos.
 
@@ -260,11 +272,13 @@ El script dice que se ejecuta cada 5 minutos asi que esperemos y veamos si algui
 
 El responder no da un hashs NTLMv2 de un usuario `Ted.Graves` , ahora tenemos que intentar romper el hashs y ver la contraseña en texto plano
 
-imagen de hashs crack
+![imagen-de-prueba](/assets/img/intelligence/hash1.png)
+_Intelligence_
 
 Tenemos una contraseña `Mr.Teddy` para el usuario `Ted.Graves` , validamos las credenciales con crackmapexec 
 
-imagen cme ted
+![imagen-de-prueba](/assets/img/intelligence/cme2.png)
+_Intelligence_
 
 La cuenta es valida pero no es `pwned` , en este punto tenemos dos credenciales validas pero no tenemos acceso a la maquina asi que vamos enumerar y recolectar mas informacion para ver si encontramos alguna forma de acceder.
 
@@ -274,15 +288,21 @@ Iniciamos la busqueda de informacion con `Bloodhound-python` usando las credenci
 >bloodhound-python -c ALL -u 'Ted.Graves' -p 'Mr.Teddy' -ns 10.10.10.248 -d intelligence.htb
 `````
 
-imagen de bloodhound python
+![imagen-de-prueba](/assets/img/intelligence/bloodhoundpy.png)
+_Intelligence_
 
 Ahora vamos a utilizar bloodhound, despues cargamos los archivos `.json` para analizarlos.
 
-imagen de .json 
+![imagen-de-prueba](/assets/img/intelligence/json1.png)
+_Intelligence_
+
+![imagen-de-prueba](/assets/img/intelligence/json2.png)
+_Intelligence_
 
 Vemo que el usuario `Ted.Graves` tiene la capcidad de dumpear la contraseña del `service account` `SVC_INTELLIGENCE.HTB` 
 
-IMAGEN DE password dump
+![imagen-de-prueba](/assets/img/intelligence/dump1.png)
+_Intelligence_
 
 Para dumpear la GMSA password usamos `gMSADumper.py` la cual solo nos pide el usuario la contraseña y el dominio.
 
@@ -290,7 +310,8 @@ Para dumpear la GMSA password usamos `gMSADumper.py` la cual solo nos pide el us
 >python3 gMSADumper.py -u 'Ted.Graves' -p 'Mr.Teddy' -l 10.10.10.248 -d intelligence.htb 
 `````
 
-imagen de gmsadumper 
+![imagen-de-prueba](/assets/img/intelligence/gmsadumper1.png)
+_Intelligence_
 
 Tenemos el hashs del `service account` con esto lo que podemos hacer es impersonar al usuario Administrador.
 
@@ -298,7 +319,8 @@ Tenemos el hashs del `service account` con esto lo que podemos hacer es imperson
 >mpacket-getST -spn WWW/dc.intelligence.htb -impersonate Administrator intelligence.htb/svc_int -hashes :4b18bc2b883607c026d27bf526bcb3d4
 `````
 
-imagen detst
+![imagen-de-prueba](/assets/img/intelligence/getst1.png)
+_Intelligence_
 
 Tenemos un error `clock skew too great` esto pasa por que nuestra maquina tiene que estar sincronizada con la maquina victima, se soluciona con `ntpdate`
 
@@ -314,7 +336,8 @@ Si utilizamos `virtual-box` seguiremos teniendo el mismo error al ejecutar `getS
 
 Ejecutamos de nuevo `mpacket-getST`
 
-imagen de mpacket-getST sin error
+![imagen-de-prueba](/assets/img/intelligence/getst2.png)
+_Intelligence_
 
 Creamos el Administrator.cache ahora tenemos que exportarlo.
 
@@ -328,27 +351,8 @@ Vamos a usar `wmiexec.py`
 >impacket-wmiexec dc.intelligence.htb -k -no-pass
 `````
 
-imagen de administrator
+![imagen-de-prueba](/assets/img/intelligence/adminshell.png)
+_Intelligence_
 
 Con esto tenemos acceso como Administrador al sistema.
-
-
-# Titulo 
-
-## Subtitulo
-    
-    prueba de subtitulo
-
-````python
-if while elif else def try True False 
-````
-
-````bash
-echo "test" | export $SHELL 
-````
-
-### imagen de prueba 
-
-![imagen-de-prueba](/assets/img/test2.png)
-_Image Caption_
 
