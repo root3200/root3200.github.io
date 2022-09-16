@@ -182,7 +182,7 @@ Tenemos el texto de todos los pdf ahora con `cat` podemos mirar el contenido , p
 ![imagen-de-prueba](/assets/img/intelligence/password1.png)
 _Intelligence_
 
-Tenemos una contraseña pero de que usuario, vamos a hacer un `Password Spray` con `crackmapexec` para ver la contraseña le pertenece algun usuraio de nuestra lista `user` .
+Tenemos una contraseña pero no sabemos de quien es, vamos a hacer un `Password Spray` con `crackmapexec` y averiguar si le corresponde a algun usuraio de nuestra lista `user` .
 
 ![imagen-de-prueba](/assets/img/intelligence/passwordspray.png)
 _Intelligence_
