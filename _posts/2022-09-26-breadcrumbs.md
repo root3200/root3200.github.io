@@ -3,7 +3,7 @@ title: breadcrumbs Writeup
 author: R4m3200
 date: 2022-09-26
 categories: [Writeup, HTB]
-tags: [Windows, LFI, SQL, Burpsuit]
+tags: [Windows, LFI, SQL, Burpsuite]
 image:
   path: ../../assets/img/breadcrumbs/Breadcrumbs.png
   width: 800 #normal 800
@@ -12,7 +12,7 @@ image:
 ---
 
 # Maquina breadcrumbs Windows.
-Un servicio web al que le haremos fuzzing, rutas con directory listing, con burpsuit ejecutamos un directory trasnversal para buscar un token y una clave secreta que nos permita secuestrar la sesion de un administrador de la web, con un LFI crearemos un .php para ejecutar comandos y lograr entrar en la maquina, un binario que nos da informacion de la existencia de una base de datos que contiene las credenciales 
+Un servicio web al que le haremos fuzzing, rutas con directory listing, con burpsuite ejecutamos un directory trasnversal para buscar un token y una clave secreta que nos permita secuestrar la sesion de un administrador de la web, con un LFI crearemos un .php para ejecutar comandos y lograr entrar en la maquina, un binario que nos da informacion de la existencia de una base de datos que contiene las credenciales 
 encriptadas de administrador.
 
 # Reconocimiento.
@@ -35,7 +35,7 @@ mirando un poco la pagina vemos que tenemos una opcion check book
 ![imagen-de-prueba](/assets/img/breadcrumbs/inicio1.png)
 _breadcrumbs_
 
-intentando listar algo no da error, si dejamos en blanco pero con espacios nos lista informacion , pero poco podremos hacer aqui.
+intentando listar algo nos da error, si dejamos en blanco pero con espacios nos lista informacion , pero poco podremos hacer aqui.
 
 ![imagen-de-prueba](/assets/img/breadcrumbs/inicio2.png)
 _breadcrumbs_
@@ -46,7 +46,7 @@ Vamos a usar wfuzz para intentar encontrar rutas en esta pagina.
 >wfuzz -c --hc=404 -t 200 -w /usr/share/seclists/Discovery/Web-Content/directory-list-2.3-medium.txt http://10.10.10.228/FUZZ
 `````
 
-Al usar wfuzz vemos que tenemos varias rutas con codigo de respuesta `301` ,si entramos a `book` vemos que se lieka informacion, es el contenido que vimos al incio, sigamo buscando en otra `portal`
+Al usar wfuzz vemos que tenemos varias rutas con codigo de respuesta `301` ,si entramos a `book` vemos que se lieka informacion, es el contenido que vimos al incio, sigamo buscando en otra ruta `portal`
 
 ![imagen-de-prueba](/assets/img/breadcrumbs/fuzz2.png)
 _breadcrumbs_
@@ -54,7 +54,7 @@ _breadcrumbs_
 ![imagen-de-prueba](/assets/img/breadcrumbs/book.png)
 _breadcrumbs_
 
-Entramos en un login, intentamos entrar co algunas credenciales como `admin:admin user:user user:password` no tenemos acceso, pero nos podemos registrar creare el usario `test:test123`, no legueamo y tenemos acceso.
+Entramos en un login, intentamos entrar co algunas credenciales como `admin:admin user:user user:password` no tenemos acceso, pero nos podemos registrar creare el usario `test:test123`, nos logueamo y tenemos acceso.
 
 ![imagen-de-prueba](/assets/img/breadcrumbs/login.png)
 _breadcrumbs_
@@ -62,7 +62,7 @@ _breadcrumbs_
 ![imagen-de-prueba](/assets/img/breadcrumbs/login2.png)
 _breadcrumbs_
 
-Tenemos varias opciones miremos `check task` , tenemos una tabla llamada `issues` que nos da informacion sobre algunos bug de la pagina como el de `PHPSESSID ifinite session` 
+Tenemos varias opciones miremos `check task` , tenemos una tabla llamada `issues` que nos da informacion sobre algunos bugs de la pagina como el de `PHPSESSID ifinite session` 
 
 ![imagen-de-prueba](/assets/img/breadcrumbs/login2.png)
 _breadcrumbs_
@@ -80,9 +80,12 @@ si miramos en la pagina https://jwt.io y pegamos el token de nuestra sesion , no
 ![imagen-de-prueba](/assets/img/breadcrumbs/jwttest.png)
 _breadcrumbs_
 
-Regresamo a la pagina y vamos a `user management` y vemos una lista de usuarios con `username, age, position ` hay vario administradores como `paul,jack,alex` , si en la ruta quitamos el users.php nos lieka mas informacion y vemos un archivo `admins.php`, aqui verificamos que usuarios se encuentran activos y `paul` que es administrador lo esta, intentaremos robar su session para ingresar al sistema 
+Regresamo a la pagina y vamos a `user management` y vemos una lista de usuarios con `username, age, position `  hay vario administradores como `paul,jack,alex` , si en la ruta quitamos el users.php nos lieka mas informacion y vemos un archivo `admins.php`, aqui verificamos que usuarios se encuentran activos y `paul` que es administrador lo esta, intentaremos robar su session para ingresar al sistema 
 
 ![imagen-de-prueba](/assets/img/breadcrumbs/users1.png)
+_breadcrumbs_
+
+![imagen-de-prueba](/assets/img/breadcrumbs/active1.png)
 _breadcrumbs_
 
 Buscando mas a fondo vemos que la opcion `file management`  nos lleva a `/portal/php/file.php` pero nos redirecciona a la pagina de incio.
@@ -90,7 +93,7 @@ Buscando mas a fondo vemos que la opcion `file management`  nos lleva a `/portal
 ![imagen-de-prueba](/assets/img/breadcrumbs/redireccion.png)
 _breadcrumbs_
 
-Voy a usar burpsuit para ver lo que tramita esta pagina cuando damos click en `file management` , activamos el foxyproxy y vamos a interceptar la peticion.
+Voy a usar burpsuite para ver lo que tramita esta pagina cuando damos click en `file management` , activamos el foxyproxy y vamos a interceptar la peticion.
 
 ![imagen-de-prueba](/assets/img/breadcrumbs/burp1.png)
 _breadcrumbs_
@@ -111,7 +114,7 @@ Intento subir un cmd.php para intentar ejecutar comandos, pero la pagina me dice
 ![imagen-de-prueba](/assets/img/breadcrumbs/upload2.png)
 _breadcrumbs_
 
-Voy a interceptar otra peticio pero esta vez en la ruta de books , al presionar el boton `Book` nos cargar los archivos .html de la ruta que vimos antes `/books` , veamos que nos reporta el burpsuit.
+Voy a interceptar otra peticio pero esta vez en la ruta de books , al presionar el boton `Book` nos cargar los archivos .html de la ruta que vimos antes `/books` , veamos que nos reporta el burpsuite.
 
 ![imagen-de-prueba](/assets/img/breadcrumbs/books1.png)
 _breadcrumbs_
@@ -139,7 +142,7 @@ Vemos que tenemos capcidad de leer los archivos `.php` , busquemos mas rutas que
 ![imagen-de-prueba](/assets/img/breadcrumbs/cookiefuzz.png)
 _breadcrumbs_
 
-Vemos un archivo `cookie.php` probemos esta ruta en el bursuit para ver lo que contiene.
+Vemos un archivo `cookie.php` probemos esta ruta en el burpsuite para ver lo que contiene.
 
 ![imagen-de-prueba](/assets/img/breadcrumbs/cookieburp.png)
 _breadcrumbs_
@@ -166,7 +169,7 @@ Seguiremos aplicando wfuzz en la ruta `portal` econtramos otra ruta llamada `inc
 ![imagen-de-prueba](/assets/img/breadcrumbs/fuzz3.png)
 _breadcrumbs_
 
-Probemos con burpsuit para ver el contenido de los .php
+Probemos con burpsuite para ver el contenido de los .php
 miremos el archivo `fileController.php` 
 
 ![imagen-de-prueba](/assets/img/breadcrumbs/secreckey.png)
@@ -194,7 +197,7 @@ _breadcrumbs_
 ![imagen-de-prueba](/assets/img/breadcrumbs/paul2.png)
 _breadcrumbs_
 
-Ahora estamos como el usuario `paul`, lo primero que voy hacer es intentar subir un archivo que me permita ejecutar comandos, pero antes miremos la peticion con burpsuit.
+Ahora estamos como el usuario `paul`, lo primero que voy hacer es intentar subir un archivo que me permita ejecutar comandos, pero antes miremos la peticion con burpsuite.
 
 ![imagen-de-prueba](/assets/img/breadcrumbs/paul3.png)
 _breadcrumbs_
