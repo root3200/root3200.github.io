@@ -96,38 +96,57 @@ _breadcrumbs_
 
 Voy a usar burpsuit para ver lo que tramita esta pagina cuando damos click en `file management` , activamos el foxyproxy y vamos a interceptar la peticion.
 
-
+![imagen-de-prueba](/assets/img/breadcrumbs/burp1.png)
+_breadcrumbs_
 
 Con click derecho en burpsuit voy a `Do intercept -> Response to this request`  para asi tener la respuesta del lado del servidor, luego forward.
 
 
 Tenemos un codigo de respuesta `302 Found` pero si la cambio  a `200 OK` y luego forward, la pagina me muestra un menu para subir archivos 
 
+![imagen-de-prueba](/assets/img/breadcrumbs/302found.png)
+_breadcrumbs_
 
+![imagen-de-prueba](/assets/img/breadcrumbs/200ok.png)
+_breadcrumbs_
 
 Intento subir un cmd.php para intentar ejecutar comandos, pero la pagina me dice que no tengo suficientes privilegios para subirlo.
 
+![imagen-de-prueba](/assets/img/breadcrumbs/upload2.png)
+_breadcrumbs_
 
 Voy a interceptar otra peticio pero esta vez en la ruta de books , al presionar el boton `Book` nos cargar los archivos .html de la ruta que vimos antes `/books` , veamos que nos reporta el burpsuit.
 
+![imagen-de-prueba](/assets/img/breadcrumbs/books1.png)
+_breadcrumbs_
 
 Vemos que la peticion no dice que carga los archivos desde el directorio `book` y busca los archivos `.html` , si cambio el nombre del archivo por `test.html` tengo una respuesta donde indica que la hay una sentencia `file_get_contents` para obtener contenido de un archivo en este caso los `.html`
 
+![imagen-de-prueba](/assets/img/breadcrumbs/test4.png)
+_breadcrumbs_
 
+![imagen-de-prueba](/assets/img/breadcrumbs/test3.png)
+_breadcrumbs_
 
 Provemos un `Directoy Path Traversal` con la ruta del etc hosts de windows.
 
-
+![imagen-de-prueba](/assets/img/breadcrumbs/etchost.png)
+_breadcrumbs_
 
 Funciona, voy a probar otra ruta `/includes/bookController.php` 
 
+![imagen-de-prueba](/assets/img/breadcrumbs/bookcontroller.png)
+_breadcrumbs_
 
 Vemos que tenemos capcidad de leer los archivos `.php` , busquemos mas rutas que tengan archivos php, profundicemos en las rutas que encontramo antes, apliquemos wfuzz a la ruta `portal` , pero que muestre si hay archivos php
 
+![imagen-de-prueba](/assets/img/breadcrumbs/cookiefuzz.png)
+_breadcrumbs_
 
 Vemos un archivo `cookie.php` probemos esta ruta en el bursuit para ver lo que contiene.
 
-
+![imagen-de-prueba](/assets/img/breadcrumbs/cookieburp.png)
+_breadcrumbs_
 
 El archivo cookie.php se encarga de crear `PHPSESSID` de nuestra session, toma nuestro username y con key crea un valor aleatorio.
 
