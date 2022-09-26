@@ -6,7 +6,7 @@ categories: [Writeup, HTB]
 tags: [Windows, LFI, SQL, Burpsuit]
 image:
   path: ../../assets/img/breadcrumbs/Breadcrumbs.png
-  width: 500 #normal 800
+  width: 800 #normal 800
   height: 500 #normal 500
   alt: breadcrumbs
 ---
@@ -43,19 +43,15 @@ _breadcrumbs_
 Vamos a usar wfuzz para intentar encontrar rutas en esta pagina.
 
 ````bash
->wfuzz -c --hc=404 -t 200 -
+>wfuzz -c --hc=404 -t 200 -w /usr/share/seclists/Discovery/Web-Content/directory-list-2.3-medium.txt http://10.10.10.228/FUZZ
 `````
-
-![imagen-de-prueba](/assets/img/breadcrumbs/inicio2.png)
-_breadcrumbs_
-
 
 Al usar wfuzz vemos que tenemos varias rutas con codigo de respuesta `301` ,si entramos a `book` vemos que se lieka informacion, es el contenido que vimos al incio, sigamo buscando en otra `portal`
 
-![imagen-de-prueba](/assets/img/breadcrumbs/book.png)
+![imagen-de-prueba](/assets/img/breadcrumbs/fuzz2.png)
 _breadcrumbs_
 
-![imagen-de-prueba](/assets/img/breadcrumbs/fuzz2.png)
+![imagen-de-prueba](/assets/img/breadcrumbs/book.png)
 _breadcrumbs_
 
 Entramos en un login, intentamos entrar co algunas credenciales como `admin:admin user:user user:password` no tenemos acceso, pero nos podemos registrar creare el usario `test:test123`, no legueamo y tenemos acceso.
@@ -158,7 +154,7 @@ Probemos el archivo con un print al final del codigo para ver los resultados de 
 ![imagen-de-prueba](/assets/img/breadcrumbs/pruebadecookie.png)
 _breadcrumbs_
 
-Ejecutamos un bucle con el archivo, y vemos que nos crea `PHPSESSID` que tenemos actualemnte en la seccion.
+Ejecutamos un bucle con el archivo, y vemos que nos crea `PHPSESSID` que tenemos actualemnte en la sesion.
 
 ![imagen-de-prueba](/assets/img/breadcrumbs/norandon.png)
 _breadcrumbs_
@@ -368,12 +364,6 @@ Enumeremos las tablas de `bread`.
 
 ![imagen-de-prueba](/assets/img/breadcrumbs/sql3.png)
 _breadcrumbs_
-
-Tenemos la tabla `password` miremos las columnas.
-
-````bash
->union select column_name from information_schema.columns where table_schema="bread" and table_name="passwords"-- -
-`````
 
 veamos el contenido de `account y password`.
 
