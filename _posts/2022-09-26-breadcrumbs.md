@@ -1,6 +1,6 @@
 ---
 title: breadcrumbs Writeup
-author: root3200
+author: R4m3200
 date: 2022-09-26
 categories: [Writeup, HTB]
 tags: [Windows, LFI, SQL, Burpsuit]
