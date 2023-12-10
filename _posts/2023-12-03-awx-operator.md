@@ -1,11 +1,10 @@
 ---
 title: Instalar awx-operator con ks3
-author: root3200
 date: 2023-12-03
 categories: [awx]
 tags: [Linux, kubernetes]
 image:
-  path: ../../assets/img/awx-ks3.png
+  path: /assets/img/awx-ks3.png
   width: 500 #normal 800
   height: 500 #normal 500
   alt: awx-operator
