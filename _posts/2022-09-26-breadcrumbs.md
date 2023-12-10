@@ -4,7 +4,7 @@ date: 2022-09-26
 categories: [Writeup, HTB]
 tags: [Windows, LFI, SQL, Burpsuite]
 image:
-  path: /assets/img/breadcrumbs/breadcrumbs/Breadcrumbs.png
+  path: /assets/img/breadcrumbs/Breadcrumbs.png
   width: 800 #normal 800
   height: 500 #normal 500
   alt: breadcrumbs
