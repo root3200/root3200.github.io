@@ -23,7 +23,6 @@ Requerimientos.
 - Cuenta en Confluence.
 - Python.
 
----
 
 ### GitLab.
 
