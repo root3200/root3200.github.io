@@ -1,12 +1,11 @@
 ---
 title: Intelligence Writeup
-author: root3200
 date: 2022-09-15
 categories: [Writeup, HTB]
 tags: [Windows, bloodhound, crackmapexec,]
 image:
-  path: ../../assets/img/intelligence/Intelligence.png
-  width: 800 #normal 800
+  path: /assets/img/intelligence/Intelligence.png
+  width: 500 #normal 800
   height: 500 #normal 500
   alt: Intelligence
 ---
